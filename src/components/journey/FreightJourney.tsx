@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import styles from "./FreightJourney.module.css";
+import { MotionDebugHUD } from "./MotionDebugHUD";
 gsap.registerPlugin(ScrollTrigger,useGSAP);
 
 const beats=[
@@ -52,5 +53,5 @@ export function FreightJourney(){
       return()=>{delete window.__journeyDebug;trigger.kill();tl.kill()};
     });return()=>mm.revert();
   },{scope:root});
-  return <><section ref={root} className={styles.stage} aria-label="سفر محموله از انبار تا مقصد" data-scene="warehouse"><StageArt/><div className={styles.top}><span>سفر یک محموله</span><span dir="ltr">NIMA / FREIGHT JOURNEY</span></div><div className={styles.caption} aria-live="polite"><span>۰{Math.min(beat+1,5)} / ۰۵</span><h2 key={beat}>{beats[beat].label}</h2><p>{beats[beat].detail}</p></div><div className={styles.progress}><span/></div><div className={styles.scrollHint}>برای ادامه اسکرول کنید ↓</div>{beat===4&&<Link className={`btn btn-primary ${styles.endCta}`} href="/contact">درخواست مشاوره ↗</Link>}</section><section className={styles.storyboard} aria-label="مراحل حمل‌ونقل">{beats.slice(0,4).map((b,i)=><article key={b.label}><span>۰{i+1}</span><h2>{b.label}</h2><p>{b.detail}</p></article>)}</section></>;
+  return <><section ref={root} className={styles.stage} aria-label="سفر محموله از انبار تا مقصد" data-scene="warehouse"><StageArt/><div className={styles.top}><span>سفر یک محموله</span><span dir="ltr">NIMA / FREIGHT JOURNEY</span></div><div className={styles.caption} aria-live="polite"><span>۰{Math.min(beat+1,5)} / ۰۵</span><h2 key={beat}>{beats[beat].label}</h2><p>{beats[beat].detail}</p></div><div className={styles.progress}><span/></div><div className={styles.scrollHint}>برای ادامه اسکرول کنید ↓</div>{beat===4&&<Link className={`btn btn-primary ${styles.endCta}`} href="/contact">درخواست مشاوره ↗</Link>}</section><section className={styles.storyboard} aria-label="مراحل حمل‌ونقل">{beats.slice(0,4).map((b,i)=><article key={b.label}><span>۰{i+1}</span><h2>{b.label}</h2><p>{b.detail}</p></article>)}</section><MotionDebugHUD/></>;
 }

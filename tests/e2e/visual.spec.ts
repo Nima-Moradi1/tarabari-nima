@@ -22,3 +22,27 @@ test("contact visual checkpoint",async({page,isMobile})=>{
   await expect(page.locator("h1")).toBeVisible();
   await page.screenshot({path:`test-results/visual/contact-${isMobile?"mobile":"desktop"}.png`});
 });
+
+test("globe falls back when WebGL is unavailable",async({page})=>{
+  await page.addInitScript(()=>{
+    const getContext=HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext=function(this:HTMLCanvasElement,type,...args){
+      if(type==="webgl"||type==="webgl2")return null;
+      return getContext.call(this,type,...args);
+    } as typeof getContext;
+  });
+  await page.goto("/");
+  await expect(page.getByRole("img",{name:/تصویر جایگزین کره زمین/})).toBeVisible();
+});
+
+test("development motion HUD reports journey progress",async({page})=>{
+  await page.goto("/?motionDebug=1");
+  const hud=page.getByLabel("ابزار بررسی حرکت");
+  await expect(hud).toBeVisible();
+  await page.evaluate(()=>window.__journeyDebug?.setProgress(.52));
+  await expect(hud).toContainText("port");
+  await expect(hud).toContainText("triggers");
+  await hud.getByRole("button",{name:"pause"}).click();
+  await expect(hud.getByRole("button",{name:"resume"})).toBeVisible();
+  await hud.getByRole("button",{name:"resume"}).click();
+});

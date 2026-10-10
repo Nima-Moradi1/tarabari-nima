@@ -4,18 +4,19 @@
 
 ## Current state
 - **Status:** PARTIAL — runnable Persian RTL marketing demo; exact reference parity and studio-grade freight art are not achieved.
-- **Active task:** NONE. Next priority: `NR-020` visual QA and freight art refinement.
-- **Updated:** 2026-10-10 13:36 Asia/Tehran.
-- **Repository:** Local Git repository on `main`; initial feature commit `8cb6e09`. No remote or deployment exists.
+- **Active task:** None. The remaining quality gates below are open.
+- **Updated:** 2026-10-10 13:45 Asia/Tehran.
+- **Repository:** Local Git repository on `main`; no remote or deployment exists.
 - **Stack:** Next.js 15 App Router, React 19, strict TypeScript, pnpm 11, GSAP ScrollTrigger, R3F/Three.js, Tailwind v4 and CSS Modules.
 - **Scope:** Marketing demo only. Inquiry data stays in memory in the browser; no network submission or storage.
 
 ## What changed
 - Built all declared routes, Persian content models, responsive header/menu, footer, route reveal, legal pages and 404.
 - Copied the supplied original logo to `public/brand/nima-monogram.svg`; added bundled Estedad/Vazirmatn fonts and brand tokens.
-- Added a real dotted R3F globe using 4,920 precomputed Natural Earth land points, route arcs, pointer movement and CSS fallback. Precomputation removed a browser interaction stall.
+- Added a real dotted R3F globe using 4,920 precomputed Natural Earth land points, route arcs, pointer movement, back-face-hidden projected city labels and CSS fallback. Precomputation removed a browser interaction stall.
 - Built a pinned GSAP journey with one shared marked cargo unit, forklift, truck, crane, ship, abbreviated port-to-air transfer, plane and reverse scroll. Mobile uses separate timing and crop values. Reduced motion shows four readable stages.
 - Built service/industry/insight/career/community pages, six sample articles, interactive filters/gallery, and a local-only Iranian inquiry form with validation and modal.
+- Added a development-only `?motionDebug=1` HUD for scene/progress/FPS/trigger inspection and pause/resume.
 - Saved reviewed desktop 1440×900 and mobile 390×844 home, port and contact captures under `docs/screenshots/`.
 
 ## Decisions
@@ -32,7 +33,7 @@
 | NR-001 | DONE | local Git repo, pnpm install, strict TS, lint, build and test scaffold |
 | NR-002 | DONE | supplied logo, fonts and palette in all routes |
 | NR-003 | DONE | navigation, focus-trapped menu, route reveal and footer browser-tested |
-| NR-004 | UNVERIFIED | 3D globe visible; projected labels, route occlusion and failure-mode audit remain |
+| NR-004 | UNVERIFIED | 3D globe, projected labels and no-WebGL fallback browser-tested; scroll response, arc occlusion and performance remain |
 | NR-005 | UNVERIFIED | forklift and cargo animate; physical contact/occlusion needs full checkpoint review |
 | NR-006 | UNVERIFIED | truck, wheels and road animate; path tangent/bank fidelity remains |
 | NR-007 | UNVERIFIED | crane, spreader and marked cargo visible at .52; all pickup frames need review |
@@ -48,8 +49,8 @@
 | NR-017 | DONE | validation, demo-only dialog and no-POST browser test passed |
 | NR-018 | DONE | 4 clearly illustrative offices, privacy, terms and 404 |
 | NR-019 | UNVERIFIED | axe/reduced-motion checks pass; perf targets and WebGL failure need measurement |
-| NR-020 | UNVERIFIED | 6 captures reviewed; full checkpoint/route matrix and reference parity remain |
-| NR-021 | DONE | lint, TS, unit, build and 34 desktop/mobile E2E checks pass |
+| NR-020 | UNVERIFIED | 6 captures reviewed and development HUD works; full checkpoint/route matrix and reference parity remain |
+| NR-021 | DONE | lint, TS, unit, build and 38 desktop/mobile E2E checks pass |
 | NR-022 | DONE | README, asset register, motion notes and this handoff are current |
 
 ## Verification
@@ -57,7 +58,7 @@
 - `pnpm lint` — PASS; local `tsc --noEmit` — PASS.
 - `pnpm test` — PASS, 3 unit checks for Iranian phone/form validation.
 - `pnpm build` — PASS, 21 static routes/pages generated.
-- `pnpm test:e2e --reporter=line` — PASS, 34 checks across desktop Chromium and iPhone-sized mobile WebKit; includes routes, menu, form/no POST, reverse scene labels, axe and reduced motion.
+- `pnpm test:e2e --reporter=line` — PASS, 38 checks across desktop Chromium and iPhone-sized mobile WebKit; includes routes, menu, form/no POST, reverse scene labels, axe, reduced motion, no-WebGL fallback and the development HUD.
 - Browser captures reviewed at 1440×900 desktop and 390×844 mobile: home, port `.52`, contact first view. See `docs/VISUAL_QA.md`.
 - Windows sandbox initially blocked Next/Vitest/Playwright worker spawn (`EPERM`); the same checks passed outside the sandbox.
 
@@ -65,12 +66,12 @@
 - **B-001 open:** Studio-grade original/licensed truck, crane, ship and plane art has not been produced. Procedural SVG is functional but below the specified cinematic fidelity.
 - **B-002 open:** Precise original CSS/keyframes were not instrumented. Do not claim pixel or source parity.
 - **B-003 open:** Real addresses, contacts, services and business claims were not supplied; demo labels must remain.
-- **B-004 open:** Physical-device touch, performance budgets, WebGL failure and complete 12-checkpoint visual matrix are unverified.
+- **B-004 open:** Physical-device touch, performance budgets and complete 12-checkpoint visual matrix are unverified. No-WebGL fallback passed in automated browsers.
 
 ## Next steps
-1. Run `pnpm dev` and review `window.__journeyDebug.setProgress(p)` at `.02,.11,.19,.26,.35,.43,.52,.61,.69,.79,.89,.97` in both 1440×900 and 390×844; log mismatches in `docs/VISUAL_QA.md`.
+1. Run `pnpm dev` with `?motionDebug=1` and review `window.__journeyDebug.setProgress(p)` at `.02,.11,.19,.26,.35,.43,.52,.61,.69,.79,.89,.97` in both 1440×900 and 390×844; log mismatches in `docs/VISUAL_QA.md`.
 2. Replace procedural vehicle art with coherent original/licensed production layers while retaining the shared cargo timeline and provenance in `docs/ASSET_REGISTER.md`.
-3. Project globe city labels from 3D coordinates and test WebGL failure, physical touch and measured performance.
+3. Test globe scroll response, physical touch and measured performance.
 4. Obtain verified company details before changing demo disclosures, search indexing or deployment.
 
 ## Important files

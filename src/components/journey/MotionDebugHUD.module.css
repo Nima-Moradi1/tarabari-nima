@@ -1,0 +1,1 @@
+.hud{position:fixed;z-index:80;bottom:60px;left:15px;direction:ltr;background:#020a19e8;border:1px solid #6896fa;color:#e7f0f5;padding:12px 14px;min-width:180px;font:11px/1.6 Consolas,monospace;box-shadow:0 10px 30px #0008}.hud strong{color:#6896fa}.hud button{margin-top:7px;background:#e7f0f5;color:#061d5e;border:0;padding:3px 12px;font:inherit}
