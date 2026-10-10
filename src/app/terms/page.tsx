@@ -1,0 +1,4 @@
+import type { Metadata } from "next";
+import { PageHero } from "@/components/ui/PageHero";
+export const metadata:Metadata={title:"شرایط استفاده"};
+export default function Terms(){return <><PageHero eyebrow="نسخه نمایشی" title="شرایط استفاده" lead="حدود کارکرد این تجربه وب را پیش از استفاده بدانید."/><section className="section section-light"><div className="container article-prose"><h2>هدف سایت</h2><p>این وب‌سایت یک نمونه طراحی و توسعه برای برند نیما راه‌گستر است. محتوای آن معرفی ساختار پیشنهادی تجربه دیجیتال است.</p><h2>درخواست و رزرو</h2><p>ارسال فرم، سفارش حمل، رزرو، پرداخت، دریافت قیمت یا پیگیری واقعی ایجاد نمی‌کند. هیچ تعهد عملیاتی یا مالی بر اساس محتوای این نسخه شکل نمی‌گیرد.</p><h2>محتوا و نشانی‌ها</h2><p>مقاله‌ها آموزشی هستند و نشانی‌های دفترها ساختگی‌اند. برای استفاده عملیاتی از هر اطلاعاتی، تأیید مستقل و اطلاعات رسمی کسب‌وکار لازم است.</p></div></section></>}

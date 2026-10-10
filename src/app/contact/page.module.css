@@ -1,0 +1,1 @@
+.layout{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:clamp(30px,6vw,100px)}@media(max-width:767px){.layout{grid-template-columns:1fr}}

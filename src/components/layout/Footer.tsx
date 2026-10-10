@@ -1,0 +1,6 @@
+import Link from "next/link";
+import { ArrowUpLeft } from "lucide-react";
+import { brand, offices } from "@/content/brand";
+import { navigation } from "@/content/navigation";
+import styles from "./Footer.module.css";
+export function Footer(){return <footer className={styles.footer}><div className="container"><div className={styles.cta}><span className="eyebrow">گفت‌وگوی بعدی</span><h2 className="h2">محموله بعدی، گفت‌وگوی بعدی ماست.</h2><Link className="btn btn-primary" href="/contact">درخواست مشاوره <ArrowUpLeft size={18}/></Link></div><div className={styles.wordmark}>{brand.name}</div><div className={styles.columns}><div><small>نیما راه‌گستر</small><p>{brand.descriptor}</p><span className="muted">{brand.disclaimer}</span></div><nav aria-label="پیوندهای پایین صفحه">{navigation.map(n=><Link key={n.href} href={n.href}>{n.label}</Link>)}</nav><div><small>دفاتر نمونه</small>{offices.map(o=><p key={o.city}>{o.city} <span className="muted">/ {o.title}</span></p>)}<Link href="/contact#offices">مشاهده نشانی‌های نمونه ↗</Link></div></div><div className={styles.bottom}><span>© {new Intl.DateTimeFormat("fa-IR",{year:"numeric"}).format(new Date())} {brand.name} — نسخه نمایشی وب‌سایت</span><div><Link href="/privacy">حریم خصوصی</Link><Link href="/terms">شرایط استفاده</Link></div></div></div></footer>}

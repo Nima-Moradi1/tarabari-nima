@@ -1,0 +1,4 @@
+"use client";
+import { useEffect, useState } from "react";
+import styles from "./Preloader.module.css";
+export function Preloader(){const [show,setShow]=useState(false);useEffect(()=>{if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;try{if(sessionStorage.getItem("nima-intro"))return;sessionStorage.setItem("nima-intro","1")}catch{}const open=window.setTimeout(()=>setShow(true),0);const close=window.setTimeout(()=>setShow(false),1850);return()=>{clearTimeout(open);clearTimeout(close)}},[]);if(!show)return null;return <div className={styles.wrap} aria-busy="true" aria-label="در حال آماده‌سازی تجربه نیما راه‌گستر"><div className={styles.grid}><div className={styles.orb}/><span>تهران</span><span>بندرعباس</span><span>رشت</span><span>نوشهر</span></div><p>نیما راه‌گستر</p><small>یک مسیر، یک مسئولیت</small><div className={styles.bar}><i/></div></div>}

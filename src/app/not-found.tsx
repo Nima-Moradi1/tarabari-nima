@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <section className="detail-hero" style={{minHeight:"100svh"}}><div className="container"><span className="eyebrow">۴۰۴ / مسیر پیدا نشد</span><h1 className="h1">این مسیر هنوز روی نقشه نیست.</h1><p className="lead">نشانی را بررسی کنید یا از صفحه نخست، مسیر تازه‌ای آغاز کنید.</p><Link className="btn btn-primary" href="/">بازگشت به خانه ↗</Link></div></section>}

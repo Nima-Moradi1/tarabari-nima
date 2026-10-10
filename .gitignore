@@ -1,0 +1,9 @@
+node_modules
+.pnpm-store
+.next
+playwright-report
+test-results
+coverage
+*.tsbuildinfo
+.env*
+!.env.example

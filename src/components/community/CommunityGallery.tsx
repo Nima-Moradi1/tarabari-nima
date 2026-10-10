@@ -1,0 +1,5 @@
+"use client";
+import { useRef, useState } from "react";
+import styles from "./CommunityGallery.module.css";
+const ideas=["یادگیری","مسیر امن","منابع","شهر","همراهی","فردا"];
+export function CommunityGallery(){const [index,setIndex]=useState(0);const start=useRef<number|null>(null);const advance=(delta:number)=>setIndex(i=>(i+delta+ideas.length)%ideas.length);return <div className={styles.gallery}><div className={styles.head}><span className="eyebrow">گالری ایده‌ها / تصویر مفهومی</span><div><button aria-label="تصویر قبلی" onClick={()=>advance(-1)}>→</button><span>{index+1} / {ideas.length}</span><button aria-label="تصویر بعدی" onClick={()=>advance(1)}>←</button></div></div><div className={styles.frame} onTouchStart={e=>start.current=e.touches[0].clientX} onTouchEnd={e=>{if(start.current===null)return;const distance=e.changedTouches[0].clientX-start.current;if(Math.abs(distance)>35)advance(distance>0?1:-1);start.current=null}}><span>۰{index+1}</span><div className={styles.route}/><h3>{ideas[index]}</h3><small>حوزه پیشنهادی / نسخه نمایشی</small></div></div>}
