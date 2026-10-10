@@ -1,11 +1,18 @@
 "use client";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, Group, Line, LineBasicMaterial, Vector3 } from "three";
+import { AdditiveBlending, BufferAttribute, BufferGeometry, CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
 import landPoints from "@/content/globe-points.json";
 import { globeCities } from "@/content/cities";
 import styles from "./GlobeScene.module.css";
-const LABEL_OFFSETS=[[-18,-18],[30,20],[-58,-40],[42,-36]] as const;
+const LABEL_OFFSETS=[[-30,-26],[42,30],[-52,-40],[52,28]] as const;
+const routes=[globeCities[1],globeCities[4],globeCities[6],globeCities[7]];
+const labels=[globeCities[0],globeCities[1],globeCities[4],globeCities[6]];
+function distanceKm(a:{lat:number;lon:number},b:{lat:number;lon:number}){
+  const lat1=a.lat*Math.PI/180,lat2=b.lat*Math.PI/180,dLat=lat2-lat1,dLon=(b.lon-a.lon)*Math.PI/180;
+  const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+  return Math.round(6371*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h)));
+}
 
 function vector(lat:number,lon:number,r:number){
   const a=lat*Math.PI/180,b=lon*Math.PI/180;
@@ -22,19 +29,24 @@ function DottedEarth(){
   return <points geometry={geometry}><pointsMaterial size={.027} sizeAttenuation color="#a8c9ef" transparent opacity={.88} depthWrite={false}/></points>;
 }
 function TradeArc({to,index}:{to:{lat:number;lon:number};index:number}){
-  const geometry=useMemo(()=>{
-    const from=vector(35.6892,51.389,2.02),end=vector(to.lat,to.lon,2.02),coords:number[]=[];
-    for(let i=0;i<=64;i++){const t=i/64;const point=from.clone().lerp(end,t).normalize().multiplyScalar(2.03+Math.sin(t*Math.PI)*(.18+index*.04));coords.push(point.x,point.y,point.z)}
-    const result=new BufferGeometry();result.setAttribute("position",new BufferAttribute(new Float32Array(coords),3));return result;
+  const pulse=useRef<Mesh>(null);
+  const curve=useMemo(()=>{
+    const from=vector(globeCities[0].lat,globeCities[0].lon,2.02),end=vector(to.lat,to.lon,2.02);
+    const points=Array.from({length:33},(_,i)=>{const t=i/32;return from.clone().lerp(end,t).normalize().multiplyScalar(2.07+Math.sin(t*Math.PI)*(.15+index*.06))});
+    return new CatmullRomCurve3(points);
   },[to,index]);
-  const line=useMemo(()=>new Line(geometry,new LineBasicMaterial({color:index===0?"#ad6647":"#6896fa",transparent:true,opacity:.7,blending:AdditiveBlending})),[geometry,index]);
-  useEffect(()=>()=>{geometry.dispose();(line.material as LineBasicMaterial).dispose()},[geometry,line]);
-  return <primitive object={line}/>;
+  const geometry=useMemo(()=>new TubeGeometry(curve,72,.011,5,false),[curve]);
+  useEffect(()=>()=>geometry.dispose(),[geometry]);
+  useFrame(({clock})=>{if(pulse.current)pulse.current.position.copy(curve.getPointAt((clock.elapsedTime*.13+index*.21)%1))});
+  return <>
+    <mesh geometry={geometry}><meshBasicMaterial color="#e9864d" transparent opacity={.77} blending={AdditiveBlending} depthWrite={false}/></mesh>
+    <mesh ref={pulse}><sphereGeometry args={[.045,10,10]}/><meshBasicMaterial color="#ffb17a" blending={AdditiveBlending}/></mesh>
+  </>;
 }
 function GlobeObject({labelRefs}:{labelRefs:RefObject<(HTMLSpanElement|null)[]>}){
   const root=useRef<Group>(null),active=useRef(true),pointer=useRef({x:0,y:0}),angle=useRef(-.7);
   const mobile=window.innerWidth<768;
-  const labelPoints=useMemo(()=>globeCities.slice(0,mobile?2:4).map(city=>vector(city.lat,city.lon,2.18)),[mobile]);
+  const labelPoints=useMemo(()=>labels.slice(0,mobile?2:4).map(city=>vector(city.lat,city.lon,2.18)),[mobile]);
   useEffect(()=>{
     const visibility=()=>active.current=!document.hidden;
     const move=(event:PointerEvent)=>{if(event.pointerType==="touch")return;pointer.current.x=(event.clientX/window.innerWidth-.5)*.1;pointer.current.y=(event.clientY/window.innerHeight-.5)*.08};
@@ -59,9 +71,11 @@ function GlobeObject({labelRefs}:{labelRefs:RefObject<(HTMLSpanElement|null)[]>}
     });
   });
   return <group ref={root} rotation={[.16,-.7,-.1]}>
-    <mesh><sphereGeometry args={[1.96,48,32]}/><meshBasicMaterial color={new Color("#061d5e")} transparent opacity={.62}/></mesh>
+    <mesh><sphereGeometry args={[1.96,48,32]}/><meshBasicMaterial color="#03132f"/></mesh>
     <mesh><sphereGeometry args={[2.08,48,32]}/><meshBasicMaterial color="#28589e" transparent opacity={.09} blending={AdditiveBlending} depthWrite={false}/></mesh>
-    <DottedEarth/>{globeCities.slice(1).map((city,index)=><TradeArc key={city.name} to={city} index={index}/>)}
+    <DottedEarth/>
+    {routes.map((city,index)=><TradeArc key={city.name} to={city} index={index}/>)}
+    {globeCities.map((city,index)=><mesh key={city.name} position={vector(city.lat,city.lon,2.065)}><sphereGeometry args={[index===0?.042:.022,10,10]}/><meshBasicMaterial color={index===0?"#ff9b62":"#9ac5f4"}/></mesh>)}
   </group>;
 }
 export function GlobeScene(){
@@ -69,9 +83,9 @@ export function GlobeScene(){
   const mobile=typeof window!=="undefined"&&window.innerWidth<768;
   useEffect(()=>{try{const canvas=document.createElement("canvas");setSupported(Boolean(canvas.getContext("webgl2")||canvas.getContext("webgl")))}catch{setSupported(false)}},[]);
   if(!supported)return <GlobeFallback/>;
-  return <div className={styles.wrap} aria-label="کره سه‌بعدی نمایشی با مسیرهای تهران، بندرعباس، رشت و نوشهر" role="img">
+  return <div className={styles.wrap} aria-label="کره سه‌بعدی نمایشی با مسیرهای نارنجی متحرک از تهران به بندرعباس، استانبول، بمبئی و شانگهای" role="img">
     <Canvas camera={{position:[0,0,5.9],fov:50}} dpr={[1,1.75]} gl={{alpha:true,antialias:false,powerPreference:"low-power"}} onCreated={({gl})=>{gl.domElement.addEventListener("webglcontextlost",()=>setSupported(false),{once:true})}}><ambientLight intensity={.7}/><GlobeObject labelRefs={labelRefs}/></Canvas>
-    <div className={`${styles.labels} ${styles.projected}`}>{globeCities.slice(0,mobile?2:4).map((city,index)=><span key={city.name} ref={element=>{labelRefs.current[index]=element}}><i/>{city.name}</span>)}</div>
+    <div className={`${styles.labels} ${styles.projected}`}>{labels.slice(0,mobile?2:4).map((city,index)=><span key={city.name} ref={element=>{labelRefs.current[index]=element}}><i/>{city.name}{index>0&&<small>{distanceKm(globeCities[0],city).toLocaleString("fa-IR")} km</small>}</span>)}</div>
   </div>;
 }
 export function GlobeFallback(){return <div className={`${styles.wrap} ${styles.fallback}`} role="img" aria-label="تصویر جایگزین کره زمین و مسیرهای حمل"><div className={styles.fallbackOrb}/><div className={styles.labels}><span>تهران <i/></span><span>بندرعباس <i/></span><span>رشت <i/></span></div></div>}

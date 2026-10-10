@@ -4,4 +4,8 @@ export const globeCities = [
   { name: "بندرعباس", lat: 27.1832, lon: 56.2666 },
   { name: "رشت", lat: 37.2808, lon: 49.5832 },
   { name: "نوشهر", lat: 36.6485, lon: 51.4962 },
+  { name: "استانبول", lat: 41.0082, lon: 28.9784 },
+  { name: "دبی", lat: 25.2048, lon: 55.2708 },
+  { name: "بمبئی", lat: 19.076, lon: 72.8777 },
+  { name: "شانگهای", lat: 31.2304, lon: 121.4737 },
 ] as const;
