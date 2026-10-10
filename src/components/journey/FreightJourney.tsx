@@ -1,57 +1,148 @@
 "use client";
+
 import { useRef, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { useGSAP } from "@gsap/react";
-import styles from "./FreightJourney.module.css";
+import { FreightArt } from "./FreightArt";
 import { MotionDebugHUD } from "./MotionDebugHUD";
-gsap.registerPlugin(ScrollTrigger,useGSAP);
+import styles from "./FreightJourney.module.css";
 
-const beats=[
-  {at:0,label:"آماده‌سازی و بارگیری",detail:"هر حرکت، از یک بارگیری دقیق آغاز می‌شود."},
-  {at:.22,label:"مسیر جاده‌ای",detail:"از انبار تا پایانه، مسیر یکپارچه می‌ماند."},
-  {at:.47,label:"بنادر و حمل دریایی",detail:"دست‌به‌دست‌شدن محموله، بخشی از برنامه است."},
-  {at:.73,label:"حمل هوایی",detail:"مسیر به افق بعدی ادامه پیدا می‌کند."},
-  {at:.94,label:"رسیدن به مقصد",detail:"از مبدأ تا مقصد، یک تعهد."},
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, useGSAP);
+
+const beats = [
+  { at: 0, label: "آماده‌سازی و بارگیری", detail: "کانتینر از محوطه بارگیری به کامیون تحویل داده می‌شود." },
+  { at: .31, label: "مسیر جاده‌ای", detail: "کامیون با بار روی مسیر زمینی حرکت می‌کند و پیچ جاده را طی می‌کند." },
+  { at: .53, label: "بندر و انتقال بار", detail: "جرثقیل کانتینر را از کامیون تحویل می‌گیرد." },
+  { at: .76, label: "حمل دریایی و هوایی", detail: "بار از کشتی به مسیر هوایی می‌رسد." },
+  { at: .94, label: "رسیدن به مقصد", detail: "از مبدأ تا مقصد، یک مسیر روشن و قابل پیگیری." },
 ] as const;
-declare global{interface Window{__journeyDebug?:{setProgress:(p:number)=>void;getProgress:()=>number}}}
 
-function Cargo(){return <g data-j="cargo" className={styles.cargo}><ellipse cx="0" cy="52" rx="78" ry="11" fill="#061127" opacity=".5"/><rect x="-68" y="-42" width="136" height="87" rx="3" fill="url(#cargo)" stroke="#87b7dd" strokeWidth="3"/><path d="M-65 -17H65M-65 10H65M-44 -39v81M-17 -39v81M17 -39v81M44 -39v81" stroke="#7fb0d9" opacity=".65" strokeWidth="2"/><path d="M-38 -30v60l27-30-27-30M-11 -30v60" stroke="#e9f2fa" strokeWidth="5" fill="none"/><path d="M-37 25 10 -25" stroke="#a55b3e" strokeWidth="3" strokeDasharray="5 6"/><text x="58" y="32" fontSize="7" fontFamily="Arial" fill="#e7f0f5" textAnchor="end">NIMA RAHGOSTAR</text></g>}
-function Warehouse(){return <g data-j="warehouse" className={styles.scene}><rect width="1200" height="700" fill="url(#warehouseBg)"/><path d="M0 490H1200V700H0Z" fill="#141d2d"/><path d="M0 490H1200M0 618H1200" stroke="#7791ae" opacity=".35"/><path d="M35 65V492M270 65V492M505 65V492M740 65V492M975 65V492M1170 65V492" stroke="#4b6488" strokeWidth="7" opacity=".65"/><path d="M0 65H1200M0 220H1200M0 385H1200" stroke="#506886" strokeWidth="4" opacity=".4"/><path d="M0 35H1200" stroke="#8aa9cf" strokeWidth="12"/><path d="M180 45v100M620 45v100M1040 45v100" stroke="#647b97" strokeWidth="4"/><path d="M100 145h160M540 145h160M960 145h160" stroke="#cce5ff" strokeWidth="9" opacity=".75" filter="url(#glow)"/><g opacity=".65"><rect x="50" y="393" width="145" height="96" fill="#243a55"/><rect x="72" y="370" width="145" height="119" fill="#39526b"/><path d="M84 387h120M84 418h120M84 449h120" stroke="#7993aa"/><rect x="1000" y="392" width="152" height="97" fill="#263951"/></g><path d="M40 540h1120M40 600h1120" stroke="#7d8491" opacity=".22" strokeDasharray="50 45"/></g>}
-function Forklift(){return <g data-j="forklift" className={styles.vehicle}><ellipse cx="0" cy="18" rx="167" ry="25" fill="#000" opacity=".3"/><path d="M-160 -63h122v76h-122z" fill="#a65a3d" stroke="#d59d76" strokeWidth="4"/><path d="M-130 -108h54l38 45h-108z" fill="#132841" stroke="#829bb5" strokeWidth="5"/><path d="M-118 -101h29l24 31h-57z" fill="#8bb5cc" opacity=".55"/><path d="M-135 -115V-66M-35 -64V4" stroke="#e3c19c" strokeWidth="7"/><rect x="-39" y="-148" width="20" height="167" rx="3" fill="#27364c" stroke="#9ab5cc" strokeWidth="3"/><rect x="-16" y="-160" width="9" height="181" fill="#8399a9"/><g data-j="fork"><rect x="-93" y="-10" width="100" height="12" fill="#d3e2e9"/><path d="M-95 -10h-73v13h73" fill="#a9bcc8"/></g><circle data-j="forkWheel" cx="-113" cy="8" r="28" fill="#0a111a" stroke="#8993a0" strokeWidth="7"/><circle cx="-113" cy="8" r="8" fill="#b1c4d1"/><circle data-j="forkWheel" cx="-19" cy="8" r="22" fill="#0a111a" stroke="#8993a0" strokeWidth="6"/><circle cx="-19" cy="8" r="7" fill="#b1c4d1"/><path d="M-160 -53h-25" stroke="#eee5d8" strokeWidth="8"/><path d="M-12 -105h25" stroke="#ffe5a9" strokeWidth="7"/></g>}
-function Road(){return <g data-j="road" className={styles.scene}><rect width="1200" height="700" fill="#879cad"/><path d="M0 0h1200v700H0z" fill="url(#roadGround)"/><path d="M-90 680C240 550 360 685 570 420S990 295 1290 25" fill="none" stroke="#172536" strokeWidth="330"/><path d="M-90 680C240 550 360 685 570 420S990 295 1290 25" fill="none" stroke="#3f5161" strokeWidth="285"/><path d="M-90 680C240 550 360 685 570 420S990 295 1290 25" fill="none" stroke="#ced9da" strokeWidth="3" strokeDasharray="38 28" opacity=".7"/><path d="M-90 680C240 550 360 685 570 420S990 295 1290 25" fill="none" stroke="#a0aeb3" strokeWidth="315" opacity=".23"/><g fill="#18394c" opacity=".4"><circle cx="110" cy="190" r="90"/><circle cx="240" cy="80" r="54"/><circle cx="955" cy="600" r="120"/><circle cx="1080" cy="435" r="80"/></g><text x="85" y="128" fill="#dce9ed" fontSize="18" fontFamily="Arial" letterSpacing="5">ROAD / 02</text></g>}
-function Truck(){return <g data-j="truck" className={styles.vehicle}><ellipse cx="0" cy="73" rx="293" ry="25" fill="#00101d" opacity=".3"/><rect x="-290" y="-83" width="375" height="118" rx="5" fill="#283c59" stroke="#9cb4c7" strokeWidth="5"/><rect x="-265" y="-72" width="325" height="94" fill="#0e3973"/><path d="M-265 -45H60M-265 -18H60M-245 -72V22M-190 -72V22M-135 -72V22M-80 -72V22M-25 -72V22" stroke="#78a8cf" opacity=".5"/><path d="M84 -65h105l65 60v42H84z" fill="url(#cab)" stroke="#acc8da" strokeWidth="5"/><path d="M125 -56h55l41 43h-96z" fill="#95bcd6" opacity=".76"/><path d="M84 30h190" stroke="#9bb3c6" strokeWidth="10"/><rect x="250" y="8" width="28" height="13" fill="#e9d4a9"/><g data-j="truckWheels"><circle cx="-225" cy="42" r="31" fill="#09111a" stroke="#9dabb9" strokeWidth="8"/><circle cx="-110" cy="42" r="31" fill="#09111a" stroke="#9dabb9" strokeWidth="8"/><circle cx="189" cy="42" r="32" fill="#09111a" stroke="#9dabb9" strokeWidth="8"/><g fill="#b8c7d3"><circle cx="-225" cy="42" r="9"/><circle cx="-110" cy="42" r="9"/><circle cx="189" cy="42" r="9"/></g></g><text x="171" y="20" fill="#edf5fa" fontSize="10" fontFamily="Arial" textAnchor="middle">NIMA</text></g>}
-function Port(){return <g data-j="port" className={styles.scene}><rect width="1200" height="700" fill="url(#portBg)"/><path d="M0 500h1200v200H0" fill="#193d5d"/><path d="M0 509h1200" stroke="#9ab0bc" strokeWidth="12"/><path d="M0 610h1200M0 648h1200" stroke="#7ea5ba" opacity=".2"/><g fill="#425a71" stroke="#91a7b6" strokeWidth="2"><rect x="27" y="405" width="160" height="95"/><rect x="190" y="405" width="160" height="95"/><rect x="874" y="410" width="160" height="90"/><rect x="1038" y="410" width="160" height="90"/></g><path d="M0 98h1200M110 98l-90 405M1090 98l90 405" fill="none" stroke="#778da4" strokeWidth="23"/><path d="M0 117h1200" stroke="#c8d7df" strokeWidth="4"/><g data-j="craneTrolley"><rect x="488" y="82" width="180" height="38" rx="4" fill="#d0dbe2"/><circle cx="520" cy="120" r="10" fill="#26384e"/><circle cx="636" cy="120" r="10" fill="#26384e"/><g data-j="spreader"><path d="M520 120v216M636 120v216" stroke="#becbd2" strokeWidth="3"/><rect x="491" y="332" width="174" height="20" rx="3" fill="#dce5ea"/><path d="M500 352v18h18M655 352v18h-18" fill="none" stroke="#dce5ea" strokeWidth="5"/></g></g><text x="1000" y="75" fill="#e7f0f5" opacity=".7" fontFamily="Arial" fontSize="18" letterSpacing="4">PORT / 03</text></g>}
-function Ocean(){return <g data-j="ocean" className={styles.scene}><rect width="1200" height="700" fill="url(#seaBg)"/><path d="M0 350h1200" stroke="#a4cadb" opacity=".4"/><g fill="none" stroke="#9ac5dc" opacity=".27"><path d="M-20 450q200-40 400 0t400 0t400 0"/><path d="M-20 530q200-40 400 0t400 0t400 0"/><path d="M-20 610q200-40 400 0t400 0t400 0"/></g><g data-j="ship"><path d="M220 350h780l-80 200H300z" fill="#182c42" stroke="#a6c0d0" strokeWidth="6"/><path d="M240 353h740l-65 170H305z" fill="#354c65"/><rect x="300" y="346" width="152" height="74" fill="#a65b3d"/><rect x="745" y="345" width="170" height="74" fill="#355a91"/><rect x="740" y="422" width="170" height="70" fill="#8aa8ba"/><path d="M290 540q310 82 625 0" stroke="#e2f6fa" strokeWidth="8" opacity=".38" fill="none"/><path d="M310 560q290 90 605 0" stroke="#b9dfea" strokeWidth="4" opacity=".3" fill="none"/></g><text x="95" y="145" fill="#d2edf6" fontFamily="Arial" fontSize="18" letterSpacing="5">SEA / 04</text></g>}
-function Air(){return <g data-j="air" className={styles.scene}><rect width="1200" height="700" fill="url(#skyBg)"/><path d="M-50 550C260 490 520 370 1220 110" stroke="#b2d8fa" strokeWidth="5" strokeDasharray="17 16" fill="none" opacity=".8"/><g data-j="cloudBack" fill="#e1edf4" opacity=".35"><ellipse cx="220" cy="220" rx="190" ry="43"/><ellipse cx="280" cy="195" rx="100" ry="52"/><ellipse cx="945" cy="170" rx="190" ry="46"/></g><g data-j="plane"><ellipse cx="0" cy="35" rx="230" ry="24" fill="#1b4e7a" opacity=".18"/><path d="M-25 175 0 -230 25 175 11 175 0 90 -11 175Z" fill="#e8f0f4" stroke="#627b8c" strokeWidth="5"/><path d="M-28 -80-310 65l-7 31L-20 24H20L317 96l-7-31L28-80Z" fill="#d9e5eb" stroke="#627b8c" strokeWidth="5"/><path d="M-17 115-145 174l-7 18L0 166l152 26-7-18L17 115Z" fill="#b7cddd" stroke="#627b8c" strokeWidth="4"/><path d="M-12 -145h24M-7 -122h14" stroke="#142d45" strokeWidth="8"/><path d="M-150 76H-55M55 76h95" stroke="#a55b3e" strokeWidth="9"/><path d="M-20 -78 15 -78" stroke="#28589e" strokeWidth="11"/><text x="0" y="40" fill="#28589e" fontSize="15" fontFamily="Arial" textAnchor="middle" transform="rotate(-90)">NIMA RAHGOSTAR</text></g><g data-j="cloudFront" fill="#fff" opacity=".83"><ellipse cx="80" cy="560" rx="220" ry="56"/><ellipse cx="1100" cy="490" rx="230" ry="58"/><ellipse cx="1060" cy="460" rx="100" ry="48"/></g></g>}
+declare global {
+  interface Window {
+    __journeyDebug?: { setProgress: (progress: number) => void; getProgress: () => number };
+  }
+}
 
-function Transfer(){return <g data-j="transfer" className={styles.scene}><path d="M370 610h470l-85-134H455z" fill="#263e55" stroke="#a6becd" strokeWidth="5"/><path d="M730 476h152l84-170" fill="none" stroke="#e4ebef" strokeWidth="15"/><path d="M465 510h278" stroke="#b88969" strokeWidth="8" strokeDasharray="24 14"/><path d="M600 190v213" stroke="#b6c9d4" strokeWidth="4"/><path d="M520 193h160" stroke="#c8d6df" strokeWidth="14"/><path d="M540 404h120" stroke="#d3e1e8" strokeWidth="12"/><text x="630" y="600" fill="#cbdce9" fontSize="13" fontFamily="Arial" textAnchor="middle">PORT → AIR TERMINAL</text></g>}
-function StageArt(){return <svg className={styles.art} viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="warehouseBg" x2="0" y2="1"><stop stopColor="#071225"/><stop offset="1" stopColor="#27384d"/></linearGradient><linearGradient id="roadGround" x2="1" y2="1"><stop stopColor="#456474"/><stop offset="1" stopColor="#829395"/></linearGradient><linearGradient id="portBg" x2="0" y2="1"><stop stopColor="#111f37"/><stop offset="1" stopColor="#6886a0"/></linearGradient><linearGradient id="seaBg" x2="0" y2="1"><stop stopColor="#0e2745"/><stop offset="1" stopColor="#245c7b"/></linearGradient><linearGradient id="skyBg" x2="0" y2="1"><stop stopColor="#0a2550"/><stop offset="1" stopColor="#9dc4da"/></linearGradient><linearGradient id="cargo"><stop stopColor="#174782"/><stop offset=".5" stopColor="#28609e"/><stop offset="1" stopColor="#0b2d60"/></linearGradient><linearGradient id="cab"><stop stopColor="#163e80"/><stop offset="1" stopColor="#3e75ac"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="5"/></filter></defs><Warehouse/><Road/><Port/><Ocean/><Air/><Transfer/><Forklift/><Truck/><Cargo/></svg>}
+export function FreightJourney() {
+  const root = useRef<HTMLElement>(null);
+  const [beat, setBeat] = useState(0);
+  const beatIndex = useRef(0);
 
-export function FreightJourney(){
-  const root=useRef<HTMLElement>(null);const [beat,setBeat]=useState(0);const beatIndex=useRef(0);
-  useGSAP(()=>{const stage=root.current;if(!stage)return;const q=(name:string)=>stage.querySelectorAll(`[data-j="${name}"]`);const mm=gsap.matchMedia();
-    mm.add({desktop:"(min-width:768px) and (prefers-reduced-motion:no-preference)",mobile:"(max-width:767px) and (prefers-reduced-motion:no-preference)"},ctx=>{
-      const mobile=!!ctx.conditions?.mobile;const tl=gsap.timeline({defaults:{ease:"none"}});const set=(n:string,vars:gsap.TweenVars)=>gsap.set(q(n),vars);const to=(n:string,vars:gsap.TweenVars,at:number)=>tl.to(q(n),vars,at);
-      ["road","port","ocean","air","transfer","truck"].forEach(n=>set(n,{autoAlpha:0}));set("warehouse",{autoAlpha:1});set("forklift",{x:mobile?870:900,y:470});set("truck",{x:mobile?520:530,y:480});set("cargo",{x:mobile?500:450,y:445});set("plane",{x:600,y:710,rotation:-8,transformOrigin:"50% 50%"});set("spreader",{y:-80});set("craneTrolley",{x:0});
-      to("forklift",{x:mobile?690:620,duration:12},0);to("forkWheel",{rotation:-250,transformOrigin:"50% 50%",duration:12},0);to("fork",{x:-24,duration:5},8);
-      to("cargo",{x:mobile?490:450,y:418,duration:7},15);to("fork",{y:-27,duration:7},15);to("forklift",{x:mobile?760:740,duration:7},16);
-      to("cargo",{x:mobile?560:560,y:402,duration:7},20);to("forklift",{autoAlpha:0,x:mobile?700:720,duration:8},22);
-      to("warehouse",{autoAlpha:0,duration:8},22);to("road",{autoAlpha:1,duration:8},22);to("truck",{autoAlpha:1,duration:7},22);
-      to("truck",{x:mobile?620:760,y:mobile?480:450,rotation:mobile?-8:-5,duration:17},30);to("cargo",{x:mobile?660:790,y:mobile?402:372,duration:17},30);to("truckWheels",{rotation:900,transformOrigin:"50% 50%",duration:17},30);
-      to("road",{autoAlpha:0,duration:8},39);to("port",{autoAlpha:1,duration:8},39);to("truck",{x:mobile?540:530,y:480,rotation:0,duration:8},39);to("cargo",{x:mobile?560:560,y:402,duration:8},39);
-      to("spreader",{y:-10,duration:5},47);to("cargo",{y:345,duration:6},50);to("spreader",{y:-75,duration:6},50);to("truck",{autoAlpha:0,x:mobile?860:920,duration:7},51);
-      to("craneTrolley",{x:mobile?25:50,duration:6},55);to("cargo",{x:mobile?585:610,duration:6},55);to("port",{autoAlpha:0,duration:8},56);to("ocean",{autoAlpha:1,duration:8},56);to("cargo",{y:402,duration:6},60);
-      to("ship",{x:mobile?-30:-65,duration:12},63);to("cargo",{x:mobile?555:545,duration:12},63);
-      to("ocean",{autoAlpha:0,duration:8},66);to("air",{autoAlpha:1,duration:8},66);to("transfer",{autoAlpha:1,duration:4},67);to("cargo",{x:600,y:440,scale:.6,duration:8},68);to("plane",{y:500,duration:9},68);
-      to("cargo",{autoAlpha:0,y:390,duration:6},73);to("transfer",{autoAlpha:0,duration:6},73);to("plane",{y:345,rotation:0,duration:12},73);to("cloudBack",{x:mobile?-80:-120,duration:12},73);
-      to("plane",{x:mobile?670:750,y:175,rotation:6,scale:.82,duration:16},84);to("cloudFront",{x:mobile?-140:-280,duration:16},84);
-      to("plane",{x:mobile?850:1030,y:-300,scale:.48,duration:8},94);to("air",{autoAlpha:.38,duration:6},94);tl.to({}, {duration:1},99);
-      const trigger=ScrollTrigger.create({id:"freight-journey",trigger:stage,start:"top top",end:()=>`+=${window.innerHeight*(mobile?5.2:7.2)}`,pin:true,scrub:mobile ? .3 : .8,animation:tl,invalidateOnRefresh:true,onUpdate:self=>{const p=self.progress;stage.dataset.scene=p<.22?"warehouse":p<.47?"road":p<.56?"port":p<.73?"ocean":p<.94?"air":"arrival";const index=beats.reduce((found,item,i)=>p>=item.at?i:found,0);if(index!==beatIndex.current){beatIndex.current=index;setBeat(index)}stage.style.setProperty("--progress",String(p))}});
-      if(process.env.NODE_ENV!=="production"){window.__journeyDebug={setProgress:p=>{const target=trigger.start+(trigger.end-trigger.start)*Math.max(0,Math.min(1,p));window.scrollTo({top:target,behavior:"instant"})},getProgress:()=>trigger.progress}}
-      return()=>{delete window.__journeyDebug;trigger.kill();tl.kill()};
-    });return()=>mm.revert();
-  },{scope:root});
-  return <><section ref={root} className={styles.stage} aria-label="سفر محموله از انبار تا مقصد" data-scene="warehouse"><StageArt/><div className={styles.top}><span>سفر یک محموله</span><span dir="ltr">NIMA / FREIGHT JOURNEY</span></div><div className={styles.caption} aria-live="polite"><span>۰{Math.min(beat+1,5)} / ۰۵</span><h2 key={beat}>{beats[beat].label}</h2><p>{beats[beat].detail}</p></div><div className={styles.progress}><span/></div><div className={styles.scrollHint}>برای ادامه اسکرول کنید ↓</div>{beat===4&&<Link className={`btn btn-primary ${styles.endCta}`} href="/contact">درخواست مشاوره ↗</Link>}</section><section className={styles.storyboard} aria-label="مراحل حمل‌ونقل">{beats.slice(0,4).map((b,i)=><article key={b.label}><span>۰{i+1}</span><h2>{b.label}</h2><p>{b.detail}</p></article>)}</section><MotionDebugHUD/></>;
+  useGSAP(() => {
+    const stage = root.current;
+    if (!stage) return;
+    const q = (name: string) => stage.querySelectorAll(`[data-j="${name}"]`);
+    const path = stage.querySelector<SVGPathElement>("#journey-road-path");
+    if (!path) return;
+    const mm = gsap.matchMedia();
+
+    mm.add({
+      desktop: "(min-width:768px) and (prefers-reduced-motion:no-preference)",
+      mobile: "(max-width:767px) and (prefers-reduced-motion:no-preference)",
+    }, context => {
+      const mobile = Boolean(context.conditions?.mobile);
+      const tl = gsap.timeline({ defaults: { ease: "none" } });
+      const set = (name: string, vars: gsap.TweenVars) => gsap.set(q(name), vars);
+      const to = (name: string, vars: gsap.TweenVars, at: number) => tl.to(q(name), vars, at);
+
+      ["road", "port", "ocean", "air", "transfer", "truck", "roadTruck", "topCargo"].forEach(name => set(name, { autoAlpha: 0 }));
+      set("warehouse", { autoAlpha: 1 });
+      set("forklift", { x: mobile ? 890 : 830, y: 500, scale: mobile ? .65 : 1 });
+      set("truck", { x: mobile ? 730 : 590, y: 535, scale: mobile ? .55 : 1 });
+      set("cargo", { x: mobile ? 610 : 390, y: 460, scale: mobile ? .58 : 1, autoAlpha: 1 });
+      set("gantry", { x: mobile ? 130 : 0 });
+      set("topCargo", { x: 615, y: 440, scale: 1 });
+      set("ship", { x: 0 });
+      set("plane", { x: 600, y: 780, scale: 1, rotation: 0, transformOrigin: "50% 50%" });
+
+      to("forklift", { x: mobile ? 830 : 690, duration: 11 }, 0);
+      to("cargo", { x: mobile ? 625 : 470, y: 390, duration: 7 }, 11);
+      to("forklift", { x: mobile ? 910 : 750, duration: 10 }, 12);
+      to("truck", { autoAlpha: 1, duration: 5 }, 14);
+      to("cargo", { x: mobile ? 700 : 485, y: 485, duration: 8 }, 17);
+      to("forklift", { autoAlpha: 0, x: mobile ? 1050 : 900, duration: 7 }, 20);
+
+      to("warehouse", { autoAlpha: 0, duration: 5 }, 30);
+      to("road", { autoAlpha: 1, duration: 5 }, 30);
+      to("truck", { autoAlpha: 0, duration: 5 }, 30);
+      to("cargo", { autoAlpha: 0, duration: 5 }, 30);
+      to("roadTruck", { autoAlpha: 1, duration: 5 }, 30);
+      tl.to(q("roadTruck"), {
+        motionPath: { path, align: path, alignOrigin: [.5, .5], autoRotate: 90, start: 0, end: 1 },
+        duration: 21,
+      }, 31);
+
+      to("road", { autoAlpha: 0, duration: 5 }, 49);
+      to("port", { autoAlpha: 1, duration: 5 }, 49);
+      to("roadTruck", { autoAlpha: 0, duration: 4 }, 50);
+      to("truck", { autoAlpha: 1, x: mobile ? 700 : 590, y: 535, duration: 4 }, 50);
+      to("cargo", { autoAlpha: 1, x: mobile ? 650 : 485, y: 485, duration: 4 }, 50);
+      to("cargo", { y: 460, duration: 10 }, 58);
+      to("truck", { autoAlpha: 0, x: mobile ? 870 : 850, duration: 7 }, 62);
+
+      to("port", { autoAlpha: 0, duration: 6 }, 68);
+      to("ocean", { autoAlpha: 1, duration: 6 }, 68);
+      to("cargo", { x: mobile ? 680 : 615, y: 435, scale: .58, duration: 5 }, 68);
+      to("cargo", { autoAlpha: 0, duration: 4 }, 70);
+      to("topCargo", { autoAlpha: 1, duration: 4 }, 70);
+      to("ship", { x: mobile ? -45 : -105, duration: 8 }, 72);
+      to("topCargo", { x: 540, y: 580, scale: .65, duration: 9 }, 76);
+
+      to("ocean", { autoAlpha: 0, duration: 6 }, 76);
+      to("air", { autoAlpha: 1, duration: 6 }, 76);
+      to("transfer", { autoAlpha: 1, duration: 4 }, 76);
+      to("plane", { y: 390, duration: 10 }, 76);
+      to("topCargo", { autoAlpha: 0, duration: 3 }, 83);
+      to("transfer", { autoAlpha: 0, duration: 5 }, 84);
+      to("plane", { x: mobile ? 630 : 690, y: 185, rotation: 6, scale: .9, duration: 10 }, 85);
+      to("cloudBack", { x: mobile ? -80 : -135, duration: 10 }, 85);
+      to("cloudFront", { x: mobile ? -140 : -260, duration: 10 }, 85);
+      to("plane", { x: mobile ? 790 : 900, y: -290, scale: .58, duration: 8 }, 94);
+      to("air", { autoAlpha: .38, duration: 6 }, 94);
+      tl.to({}, { duration: 1 }, 99);
+
+      const trigger = ScrollTrigger.create({
+        id: "freight-journey",
+        trigger: stage,
+        start: "top top",
+        end: () => `+=${window.innerHeight * (mobile ? 5.2 : 7.2)}`,
+        pin: true,
+        scrub: mobile ? .3 : .8,
+        animation: tl,
+        invalidateOnRefresh: true,
+        onUpdate: self => {
+          const progress = self.progress;
+          stage.dataset.scene = progress < .31 ? "warehouse" : progress < .53 ? "road" : progress < .68 ? "port" : progress < .76 ? "ocean" : progress < .94 ? "air" : "arrival";
+          const index = beats.reduce((found, item, current) => progress >= item.at ? current : found, 0);
+          if (index !== beatIndex.current) { beatIndex.current = index; setBeat(index); }
+          stage.style.setProperty("--progress", String(progress));
+        },
+      });
+
+      if (process.env.NODE_ENV !== "production") {
+        window.__journeyDebug = {
+          setProgress: progress => window.scrollTo({ top: trigger.start + (trigger.end - trigger.start) * Math.max(0, Math.min(1, progress)), behavior: "instant" }),
+          getProgress: () => trigger.progress,
+        };
+      }
+      return () => { delete window.__journeyDebug; trigger.kill(); tl.kill(); };
+    });
+    return () => mm.revert();
+  }, { scope: root });
+
+  return <>
+    <section ref={root} className={styles.stage} aria-label="سفر محموله از انبار تا مقصد" data-scene="warehouse">
+      <FreightArt />
+      <div className={styles.top}><span>سفر یک محموله</span><span dir="ltr">NIMA / FREIGHT JOURNEY</span></div>
+      <div className={styles.caption} aria-live="polite"><span>۰{Math.min(beat + 1, 5)} / ۰۵</span><h2 key={beat}>{beats[beat].label}</h2><p>{beats[beat].detail}</p></div>
+      <div className={styles.progress}><span /></div>
+      <div className={styles.scrollHint}>برای ادامه اسکرول کنید ↓</div>
+      {beat === 4 && <Link className={`btn btn-primary ${styles.endCta}`} href="/contact">درخواست مشاوره ↗</Link>}
+    </section>
+    <section className={styles.storyboard} aria-label="مراحل حمل‌ونقل">{beats.slice(0, 4).map((item, index) => <article key={item.label}><span>۰{index + 1}</span><h2>{item.label}</h2><p>{item.detail}</p></article>)}</section>
+    <MotionDebugHUD />
+  </>;
 }
