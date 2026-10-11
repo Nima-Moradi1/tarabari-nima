@@ -3,3 +3,6 @@
 .roadMobile{display:none}@media(max-width:767px){.roadDesktop{display:none}.roadMobile{display:block}}
 .caption{top:19%;bottom:auto}@media(max-width:767px){.caption{top:19%;bottom:auto}}
 @media(max-width:767px){.caption{top:19%;padding:10px 12px;background:linear-gradient(270deg,#07192dcc,#07192d99);border-inline-start:1px solid #9fc3db66}.caption p{max-width:27ch;overflow-wrap:anywhere;font-size:12px;line-height:1.7}}
+@media(max-width:767px){.stage[data-scene="ocean"] .caption,.stage[data-scene="air"] .caption,.stage[data-scene="arrival"] .caption{top:6%;padding:7px 10px}.stage[data-scene="ocean"] .caption h2,.stage[data-scene="air"] .caption h2,.stage[data-scene="arrival"] .caption h2{font-size:clamp(24px,7vw,34px)}}
+@media(max-width:767px){.stage[data-phase="takeoff"] .caption{top:auto;bottom:6%}}
+@media(max-width:767px){.stage[data-scene="ocean"] .caption{top:auto;bottom:6%}}

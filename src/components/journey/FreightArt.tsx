@@ -25,6 +25,20 @@ export function FreightArt() {
           <stop stopColor="#0d3153" />
           <stop offset="1" stopColor="#8aaec3" />
         </linearGradient>
+        <linearGradient id="sea-sheen" x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#e4f8f3" stopOpacity=".34" />
+          <stop offset=".42" stopColor="#6cb5c5" stopOpacity=".08" />
+          <stop offset="1" stopColor="#83c4ca" stopOpacity=".18" />
+        </linearGradient>
+        <radialGradient id="sea-sunlight" cx=".18" cy=".04" r=".9">
+          <stop stopColor="#f5ffed" stopOpacity=".29" />
+          <stop offset=".45" stopColor="#a8dacc" stopOpacity=".06" />
+          <stop offset="1" stopColor="#a8dacc" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="runway-perspective" x2="0" y2="1">
+          <stop stopColor="#708c99" /><stop offset="1" stopColor="#263e4c" />
+        </linearGradient>
+        <clipPath id="air-load-channel"><rect x="39" y="-230" width="280" height="80" /></clipPath>
         <pattern id="concrete" width="120" height="120" patternUnits="userSpaceOnUse">
           <path d="M0 0H120V120H0Z" fill="none" stroke="#fff" strokeOpacity=".08" strokeWidth="2" />
           <circle cx="39" cy="48" r="1" fill="#fff" opacity=".15" />
@@ -112,51 +126,85 @@ export function FreightArt() {
       </g>
 
       <g data-j="ocean" className={styles.scene}>
-        <rect width="1200" height="700" fill="url(#water)" />
-        <g fill="none" stroke="#a4ccda" opacity=".26">
-          {[140, 220, 300, 380, 460, 540, 620].map(y => <path key={y} d={`M-100 ${y}q110 -25 220 0t220 0t220 0t220 0t220 0t220 0`} strokeWidth="3" />)}
+        <rect width="1200" height="700" fill="#08263d" />
+        <g data-j="waterSwell">
+          <image data-j="waterSurface" href={asset("ocean-water-v2")} x="-110" y="-65" width="1420" height="830" preserveAspectRatio="xMidYMid slice" />
+        </g>
+        <g data-j="waterShimmer">
+          <image data-j="waterRipples" href={asset("ocean-water-v2")} x="-160" y="-95" width="1520" height="890" preserveAspectRatio="xMidYMid slice" opacity=".19" style={{ mixBlendMode: "screen" }} />
+        </g>
+        <rect width="1200" height="700" fill="url(#sea-sheen)" opacity=".8" />
+        <rect width="1200" height="700" fill="url(#sea-sunlight)" />
+        <g data-j="waterGlintMotion">
+          <g data-j="waterGlint" fill="none" stroke="#e7fff2" strokeLinecap="round" opacity=".38">
+            <path d="M-80 155q73 -21 145 -6m420 181q55 -17 116 -7m478 -176q65 -22 142 -11M-30 570q50 -13 108 -4m787 43q62 -19 139 -11" strokeWidth="2" />
+            <path d="M110 280q35 -10 73 -6m632 -45q27 -11 65 -8M310 620q57 -16 112 -7m612 -262q51 -14 93 -5" strokeWidth="1.5" />
+          </g>
         </g>
         <text x="90" y="132" fill="#d0e6ed" fontFamily="Arial" fontSize="18" letterSpacing="4">OCEAN / 04</text>
       </g>
 
       <g data-j="air" className={styles.scene}>
         <rect width="1200" height="700" fill="url(#sky)" />
+        <image data-j="skyPhoto" href={asset("flight-sky-v2")} x="-55" y="-30" width="1310" height="760" preserveAspectRatio="xMidYMid slice" />
+        <g data-j="approachField" className={styles.scene}>
+          <path d="M0 515Q285 495 600 510T1200 500V700H0Z" fill="#7895a1" opacity=".75" />
+          <path d="M548 510h104l500 190H48Z" fill="url(#runway-perspective)" />
+          <path d="M592 521h16l36 179h-88Z" fill="#d7e1dc" opacity=".55" strokeDasharray="20 23" />
+          <path d="M548 510L48 700m604-190 500 190" stroke="#e4d9b5" strokeWidth="5" opacity=".72" />
+          <path d="M0 517H1200" stroke="#e0ebeb" strokeOpacity=".32" strokeWidth="3" />
+        </g>
         <g data-j="transfer" className={styles.scene}>
-          <rect width="1200" height="700" fill="#647b88" />
+          <rect width="1200" height="700" fill="#728995" />
           <rect width="1200" height="700" fill="url(#concrete)" />
-          <path d="M150 240H1080M150 450H1080" stroke="#dbe4e5" strokeOpacity=".28" strokeWidth="4" strokeDasharray="55 35" />
-          <path d="M1050 380Q835 300 665 320" stroke="#e5bd64" strokeOpacity=".8" strokeWidth="4" strokeDasharray="16 14" fill="none" />
+          <path d="M150 240H1080M150 450H1080" stroke="#dbe4e5" strokeOpacity=".24" strokeWidth="4" strokeDasharray="55 35" />
+          <path d="M1050 352Q845 335 678 348" stroke="#e5bd64" strokeOpacity=".72" strokeWidth="4" strokeDasharray="16 14" fill="none" />
           <path d="M0 580H1200V700H0Z" fill="#334b59" />
           <path d="M0 596H1200M0 686H1200" stroke="#c7d6d9" strokeWidth="4" />
           <path d="M40 640H1160" stroke="#e0e6e5" strokeWidth="4" strokeDasharray="48 38" />
           <path d="M210 300V580M950 300V580" stroke="#e6edf0" strokeOpacity=".22" strokeWidth="3" strokeDasharray="12 16" />
         </g>
-        <path data-j="flightPath" d="M-60 625Q420 480 1240 105" stroke="#b6dcf3" strokeWidth="3" strokeDasharray="18 18" opacity=".6" fill="none" />
-        <g data-j="cloudBack" fill="#e6f3f6" opacity=".55" filter="url(#cloud-soft)">
-          <ellipse cx="220" cy="200" rx="210" ry="60" />
-          <ellipse cx="985" cy="175" rx="230" ry="65" />
+        <path data-j="flightPath" d="M650 390Q690 105 980 -80" stroke="#f6fcff" strokeWidth="3" strokeDasharray="18 18" opacity=".5" fill="none" />
+        <g data-j="cloudBack" fill="#f5fcff" opacity=".26" filter="url(#cloud-soft)">
+          <ellipse cx="110" cy="245" rx="175" ry="84" />
+          <ellipse cx="1090" cy="185" rx="185" ry="72" />
         </g>
+        <ellipse data-j="planeShadow" cx="650" cy="435" rx="170" ry="235" fill="#152a38" opacity=".34" filter="url(#ground-shadow)" />
         <g data-j="airCargo" className={styles.cargo}>
-          <ellipse cy="10" rx="62" ry="32" fill="#071521" opacity=".28" filter="url(#ground-shadow)" />
-          <rect x="-61" y="-31" width="122" height="62" rx="4" fill="#304a5c" stroke="#9fb4bd" strokeWidth="2" />
-          <image href="/scene/container-top.png" x="-20" y="-55" width="40" height="110" transform="rotate(90)" />
-          <circle cx="-45" cy="-32" r="6" fill="#101d28" /><circle cx="45" cy="-32" r="6" fill="#101d28" />
-          <circle cx="-45" cy="32" r="6" fill="#101d28" /><circle cx="45" cy="32" r="6" fill="#101d28" />
+          <ellipse cy="26" rx="96" ry="27" fill="#071521" opacity=".36" filter="url(#ground-shadow)" />
+          <rect x="-172" y="-25" width="186" height="50" rx="3" fill="#334d5e" stroke="#b7cbd2" strokeWidth="3" />
+          <rect x="-169" y="-18" width="180" height="36" fill="#667f89" />
+          <path d="M-152 -15v30m22-30v30m22-30v30m22-30v30m22-30v30m22-30v30m22-30v30" stroke="#b8c9ce" strokeWidth="4" opacity=".7" />
+          <path d="M-55 24v34m55-34v34" stroke="#243a48" strokeWidth="7" />
+          <rect x="-70" y="50" width="88" height="22" rx="3" fill="#294253" stroke="#9db4be" strokeWidth="2" />
+          <circle cx="-58" cy="70" r="9" fill="#152636" stroke="#b0c3c6" strokeWidth="3" /><circle cx="10" cy="70" r="9" fill="#152636" stroke="#b0c3c6" strokeWidth="3" />
+          <rect x="15" y="-12" width="58" height="43" rx="6" fill="#304e60" stroke="#a8bfc9" strokeWidth="2" />
+          <circle cx="60" cy="32" r="8" fill="#142737" stroke="#a8bfc9" strokeWidth="3" />
         </g>
         <g data-j="plane" className={styles.vehicle}>
+          <g clipPath="url(#air-load-channel)">
+            <g data-j="airPayload" className={styles.cargo}>
+              <rect x="-47" y="-23" width="94" height="46" rx="2" fill="#e6e8e5" stroke="#7c919b" strokeWidth="3" />
+              <path d="M-32 -21v42m16-42v42m16-42v42m16-42v42m16-42v42" stroke="#afbdc4" strokeWidth="2" />
+              <rect x="-24" y="-14" width="48" height="28" rx="3" fill="#1b478c" />
+            </g>
+          </g>
           <image href={asset("plane-top")} x="-215" y="-315" width="430" height="645" />
-          <g data-j="hatch" fill="none" stroke="#1f5a7e" strokeWidth="3" opacity=".8"><path d="M18 -120h21v35H18" /><path d="M30 -115v25" strokeDasharray="4 4" /></g>
+          <g data-j="hatch" opacity=".85">
+            <path d="M20 -224h27v62H20Z" fill="#203746" stroke="#bed0d2" strokeWidth="3" />
+            <path data-j="hatchDoor" d="M21 -222h25v58H21Z" fill="#e3e9e9" stroke="#748b98" strokeWidth="2" />
+          </g>
         </g>
-        <g data-j="cloudFront" fill="#f4fbfb" opacity=".75" filter="url(#cloud-soft)">
-          <ellipse cx="30" cy="600" rx="250" ry="80" />
-          <ellipse cx="1150" cy="520" rx="260" ry="70" />
+        <g data-j="cloudFront" fill="#f4fbfb" opacity=".45" filter="url(#cloud-soft)">
+          <path d="M-180 550Q-5 425 176 550T490 590Q250 760 -180 720Z" />
+          <path d="M890 650Q1045 440 1240 525L1370 790H875Z" />
         </g>
       </g>
 
       <g data-j="ship" className={styles.vehicle}>
         <g data-j="shipBody">
-          <g data-j="shipWake" className={styles.vehicle} fill="none" stroke="#b6dbe4" strokeWidth="5" opacity=".38">
-            <path d="M-390 -105Q-525 -80 -650 -125M-390 105Q-525 80 -650 125" />
+          <g data-j="shipWake" className={styles.vehicle} transform="translate(-620 0) rotate(90)">
+            <image href={asset("ship-wake-v2")} x="-200" y="-300" width="400" height="600" opacity=".65" />
           </g>
           <ellipse rx="405" ry="105" fill="#d7f1f2" opacity=".12" filter="url(#ground-shadow)" />
           <image href={asset("ship-top")} x="-425" y="-170" width="850" height="340" />
