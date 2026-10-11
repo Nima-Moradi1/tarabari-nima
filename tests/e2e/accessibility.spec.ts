@@ -14,6 +14,6 @@ test("reduced motion exposes every transport mode without pinning",async({page})
   await page.goto("/");
   const storyboard=page.getByRole("region",{name:"مراحل حمل‌ونقل"});
   await expect(storyboard).toBeVisible();
-  for(const stage of ["آماده‌سازی و بارگیری","مسیر جاده‌ای","بنادر و حمل دریایی","حمل هوایی"])await expect(storyboard).toContainText(stage);
+  for(const stage of ["آماده‌سازی و بارگیری","مسیر جاده‌ای","بندر و انتقال بار","حمل دریایی","حمل هوایی"])await expect(storyboard).toContainText(stage);
   await expect.poll(()=>page.evaluate(()=>window.__journeyDebug)).toBeUndefined();
 });
