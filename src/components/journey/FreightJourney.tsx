@@ -36,8 +36,6 @@ export function FreightJourney() {
     const stage = root.current;
     if (!stage) return;
     const q = (name: string) => stage.querySelectorAll(`[data-j="${name}"]`);
-    const path = stage.querySelector<SVGPathElement>("#journey-road-path");
-    if (!path) return;
     const mm = gsap.matchMedia();
 
     mm.add({
@@ -45,6 +43,8 @@ export function FreightJourney() {
       mobile: "(max-width:767px) and (prefers-reduced-motion:no-preference)",
     }, context => {
       const mobile = Boolean(context.conditions?.mobile);
+      const path = stage.querySelector<SVGPathElement>(mobile ? "#journey-road-path-mobile" : "#journey-road-path-desktop");
+      if (!path) return;
       const tl = gsap.timeline({ defaults: { ease: "none" } });
       const set = (name: string, vars: gsap.TweenVars) => gsap.set(q(name), vars);
       const to = (name: string, vars: gsap.TweenVars, at: number) => tl.to(q(name), vars, at);
@@ -52,8 +52,11 @@ export function FreightJourney() {
       ["road", "port", "ocean", "air", "transfer", "truck", "roadTruck", "ship", "shipWake", "deckCargo", "craneRig", "airCargo", "cloudBack", "cloudFront", "flightPath"].forEach(name => set(name, { autoAlpha: 0 }));
       set("warehouse", { autoAlpha: 1 });
       set("forklift", { x: mobile ? 1020 : 930, y: 500, scale: mobile ? .65 : 1 });
-      set("truck", { x: mobile ? 1190 : 1200, y: 535, scale: mobile ? .5 : 1 });
-      set("cargo", { x: mobile ? 625 : 470, y: 500, scale: mobile ? .52 : 1, autoAlpha: 1 });
+      set("boom", { attr: { transform: "rotate(-10 100 -50)" } });
+      set("truck", { x: mobile ? 1000 : 1200, y: 535, scale: mobile ? .5 : 1, transformOrigin: "50% 50%" });
+      set("cargo", { x: mobile ? 625 : 470, y: 390, scale: mobile ? .52 : 1, autoAlpha: 1, transformOrigin: "50% 50%" });
+      set("stackerGrip", { autoAlpha: 0 });
+      set("roadTruck", { x: mobile ? 690 : 850, y: 555, rotation: 90, scale: mobile ? .65 : .85 });
       set("gantry", { x: mobile ? 130 : 0 });
       set("ship", { x: mobile ? 765 : 1020, y: 450, scale: .7 });
       set("shipBody", { rotation: 0, transformOrigin: "50% 50%" });
@@ -65,28 +68,35 @@ export function FreightJourney() {
       set("airCargo", { x: mobile ? 800 : 1050, y: 380, scale: .8 });
       set("caption", { y: 0 });
 
-      // The stacker approaches the grounded container, lifts it, and holds it
-      // until the trailer is underneath. The loaded rig then drives out of shot.
+      // Grip the top corner castings before lifting. Keep the gripper attached
+      // through the trailer descent, then release it before departure.
       to("forklift", { x: mobile ? 850 : 700, duration: 9, ease: "power1.out" }, 0);
-      to("cargo", { y: 390, duration: 6, ease: "power1.inOut" }, 10);
-      to("truck", { autoAlpha: 1, x: mobile ? 740 : 590, duration: 5, ease: "power1.out" }, 19);
-      to("cargo", { x: mobile ? 635 : 485, duration: 5 }, 16);
-      to("cargo", { y: 485, duration: 5, ease: "power1.inOut" }, 19);
-      to("forklift", { x: mobile ? 1060 : 1060, autoAlpha: 0, duration: 3 }, 23);
-      to("truck", { x: mobile ? 900 : 850, duration: 6, ease: "power1.in" }, 25);
-      to("cargo", { x: mobile ? 795 : 745, duration: 6, ease: "power1.in" }, 25);
+      to("stackerGrip", { autoAlpha: 1, duration: 1 }, 9);
+      to("cargo", { y: 330, duration: 5, ease: "power1.inOut" }, 10);
+      to("boom", { attr: { transform: "rotate(0 100 -50)" }, duration: 5, ease: "power1.inOut" }, 10);
+      to("cargo", { x: mobile ? 520 : 485, duration: 4, ease: "power1.inOut" }, 15);
+      if (mobile) to("forklift", { x: 745, duration: 4, ease: "power1.inOut" }, 15);
+      to("truck", { autoAlpha: 1, x: mobile ? 600 : 590, duration: 4, ease: "power1.out" }, 18);
+      to("cargo", { y: mobile ? 510 : 485, duration: 4, ease: "power1.inOut" }, 22);
+      to("boom", { attr: { transform: `rotate(${mobile ? -42 : -30} 100 -50)` }, duration: 4, ease: "power1.inOut" }, 22);
+      to("stackerGrip", { autoAlpha: 0, y: -18, duration: 1.5 }, 26);
+      to("forklift", { x: 1060, autoAlpha: 0, duration: 3 }, 27);
+      to("truck", { x: mobile ? 690 : 850, duration: 5, ease: "power1.in" }, 29);
+      to("cargo", { x: mobile ? 610 : 745, duration: 5, ease: "power1.in" }, 29);
 
-      to("road", { autoAlpha: 1, duration: 6 }, 32);
-      to("warehouse", { autoAlpha: 0, duration: 6 }, 32);
-      to("truck", { x: mobile ? 1150 : 1500, scale: mobile ? .4 : .72, duration: 7, ease: "power1.in" }, 31);
-      to("cargo", { x: mobile ? 1045 : 1395, scale: mobile ? .4 : .72, duration: 7, ease: "power1.in" }, 31);
-      to("truck", { autoAlpha: 0, duration: 1 }, 38);
-      to("cargo", { autoAlpha: 0, duration: 1 }, 38);
-      to("roadTruck", { autoAlpha: 1, duration: 2 }, 36);
+      // The camera moves from the side to above at the loaded truck's actual
+      // right-side position. Both projections overlap there before it turns.
+      to("road", { autoAlpha: 1, duration: 6 }, 34);
+      to("warehouse", { autoAlpha: 0, duration: 6 }, 34);
+      to("truck", { y: 555, scale: mobile ? .32 : .4, duration: 4, ease: "power1.inOut" }, 36);
+      to("cargo", { x: mobile ? 655 : 808, y: 535, scale: mobile ? .22 : .4, duration: 4, ease: "power1.inOut" }, 36);
+      to("roadTruck", { autoAlpha: 1, duration: 3 }, 37);
+      to("truck", { autoAlpha: 0, duration: 2 }, 38);
+      to("cargo", { autoAlpha: 0, duration: 2 }, 38);
       tl.to(q("roadTruck"), {
         motionPath: { path, align: path, alignOrigin: [.5, .5], autoRotate: 90, start: 0, end: 1 },
-        duration: 14,
-      }, 37);
+        duration: 12,
+      }, 40);
 
       to("port", { autoAlpha: 1, duration: 5 }, 47);
       to("road", { autoAlpha: 0, duration: 5 }, 47);

@@ -1,6 +1,8 @@
 import styles from "./FreightJourney.module.css";
 
 const asset = (name: string) => `/scene/${name}.webp`;
+const mobileRoadPath = "M690 555C710 540 680 470 640 430C610 395 600 340 600 230V-70";
+const mobileRoadSurfacePath = "M-200 555H690C710 540 680 470 640 430C610 395 600 340 600 230V-70";
 
 export function FreightArt() {
   return (
@@ -39,6 +41,15 @@ export function FreightArt() {
           <feGaussianBlur stdDeviation="22" />
         </filter>
         <clipPath id="gantry-shell"><path d="M0 0H1200V312H0ZM0 312H190V700H0ZM1040 312H1200V700H1040Z" /></clipPath>
+        <path id="stacker-boom-outline" d="M-370 -270H200V-44H126L92 -22L65 -42L32 -65L-40 -74L-120 -92L-210 -82H-370Z" />
+        <mask id="stacker-chassis-mask" maskUnits="userSpaceOnUse" x="-370" y="-270" width="570" height="380">
+          <rect x="-370" y="-270" width="570" height="380" fill="white" />
+          <use href="#stacker-boom-outline" fill="black" />
+        </mask>
+        <mask id="stacker-boom-mask" maskUnits="userSpaceOnUse" x="-370" y="-270" width="570" height="380">
+          <use href="#stacker-boom-outline" fill="white" />
+          <rect x="-370" y="-174" width="229" height="87" fill="black" />
+        </mask>
       </defs>
 
       <g data-j="warehouse" className={styles.scene}>
@@ -62,12 +73,22 @@ export function FreightArt() {
       <g data-j="road" className={styles.scene}>
         <rect width="1200" height="700" fill="#657987" />
         <rect width="1200" height="700" fill="url(#concrete)" />
-        <path d="M0 555H280C448 555 570 450 570 280V-70" fill="none" stroke="#1d2831" strokeWidth="322" />
-        <path d="M0 555H280C448 555 570 450 570 280V-70" fill="none" stroke="#becbc9" strokeOpacity=".55" strokeWidth="309" />
-        <path d="M0 555H280C448 555 570 450 570 280V-70" fill="none" stroke="#363f45" strokeWidth="300" />
-        <path d="M0 555H280C448 555 570 450 570 280V-70" fill="none" stroke="url(#road-grain)" strokeWidth="296" />
-        <path d="M0 555H280C448 555 570 450 570 280V-70" fill="none" stroke="#ccd5d6" strokeOpacity=".8" strokeWidth="2" strokeDasharray="28 22" />
-        <path id="journey-road-path" d="M0 555H280C448 555 570 450 570 280V-70" fill="none" stroke="none" />
+        <g className={styles.roadDesktop}>
+        <path d="M850 555H950C1040 555 1040 455 925 425C760 380 650 380 650 230V-70" fill="none" stroke="#1d2831" strokeWidth="322" />
+        <path d="M850 555H950C1040 555 1040 455 925 425C760 380 650 380 650 230V-70" fill="none" stroke="#becbc9" strokeOpacity=".55" strokeWidth="309" />
+        <path d="M850 555H950C1040 555 1040 455 925 425C760 380 650 380 650 230V-70" fill="none" stroke="#363f45" strokeWidth="300" />
+        <path d="M850 555H950C1040 555 1040 455 925 425C760 380 650 380 650 230V-70" fill="none" stroke="url(#road-grain)" strokeWidth="296" />
+        <path d="M850 555H950C1040 555 1040 455 925 425C760 380 650 380 650 230V-70" fill="none" stroke="#ccd5d6" strokeOpacity=".8" strokeWidth="2" strokeDasharray="28 22" />
+        <path id="journey-road-path-desktop" d="M850 555H950C1040 555 1040 455 925 425C760 380 650 380 650 230V-70" fill="none" stroke="none" />
+        </g>
+        <g className={styles.roadMobile}>
+          <path d={mobileRoadSurfacePath} fill="none" stroke="#1d2831" strokeWidth="322" />
+          <path d={mobileRoadSurfacePath} fill="none" stroke="#becbc9" strokeOpacity=".55" strokeWidth="309" />
+          <path d={mobileRoadSurfacePath} fill="none" stroke="#363f45" strokeWidth="300" />
+          <path d={mobileRoadSurfacePath} fill="none" stroke="url(#road-grain)" strokeWidth="296" />
+          <path d={mobileRoadSurfacePath} fill="none" stroke="#ccd5d6" strokeOpacity=".8" strokeWidth="2" strokeDasharray="28 22" />
+          <path id="journey-road-path-mobile" d={mobileRoadPath} fill="none" stroke="none" />
+        </g>
         <path d="M50 130H250M910 540H1120" stroke="#d5dee0" strokeOpacity=".33" strokeWidth="2" />
         <text x="930" y="125" fill="#e5eef0" fontFamily="Arial" fontSize="18" letterSpacing="4">ROAD / 02</text>
       </g>
@@ -150,6 +171,12 @@ export function FreightArt() {
         <ellipse cx="0" cy="16" rx="74" ry="117" fill="#071521" opacity=".36" filter="url(#ground-shadow)" />
         <image href={asset("truck-top")} x="-90" y="-135" width="180" height="270" />
       </g>
+      <g data-j="forklift" className={styles.vehicle}>
+        <image href={asset("reach-stacker")} x="-370" y="-270" width="570" height="380" mask="url(#stacker-chassis-mask)" />
+        <g data-j="boom">
+          <image href={asset("reach-stacker")} x="-370" y="-270" width="570" height="380" mask="url(#stacker-boom-mask)" />
+        </g>
+      </g>
       <g data-j="truck" className={styles.vehicle}>
         <ellipse cx="0" cy="71" rx="300" ry="30" fill="#06101a" opacity=".35" filter="url(#ground-shadow)" />
         <image href={asset("truck-empty")} x="-320" y="-110" width="640" height="214" />
@@ -157,6 +184,13 @@ export function FreightArt() {
       <g data-j="cargo" className={styles.cargo}>
         <image href={asset("container")} x="-145" y="-65" width="290" height="145" />
         <image href="/brand/nima-monogram.svg" x="-33" y="-20" width="66" height="66" opacity=".8" />
+        <g data-j="stackerGrip" fill="none" strokeLinejoin="round">
+          <path d="M-140 -67L140 -48l-1 11L-140 -56Z" fill="#25333a" stroke="#85969e" strokeWidth="2" />
+          <path d="M-139 -60v15m278 4v15" stroke="#202a30" strokeWidth="5" />
+          <path d="M-145 -61h12v13h-12zm278 19h12v13h-12z" fill="#d7a441" stroke="#17232a" strokeWidth="2" />
+          <path d="M-129 -65l24 10m210 2l24 10" stroke="#e6bc63" strokeWidth="3" />
+          <path d="M-18 -74v12m36-9v12" stroke="#1d2b32" strokeWidth="6" />
+        </g>
       </g>
       <g data-j="craneRig" className={styles.vehicle}>
         <rect x="-48" y="135" width="96" height="31" rx="4" fill="#233945" stroke="#c4d0d4" strokeWidth="3" />
@@ -167,9 +201,6 @@ export function FreightArt() {
           <path d="M-140 19v19m280-19v19" stroke="#162a35" strokeWidth="5" />
           <path d="M-128 2l28 17m45-17l28 17m45-17l28 17m45-17l28 17" stroke="#182b36" strokeWidth="7" />
         </g>
-      </g>
-      <g data-j="forklift" className={styles.vehicle}>
-        <image href={asset("reach-stacker")} x="-370" y="-270" width="570" height="380" />
       </g>
     </svg>
   );

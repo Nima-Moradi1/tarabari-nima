@@ -1,5 +1,32 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
+test("stacker places the container before the loaded truck turns onto the road", async ({ page, isMobile }) => {
+  if (!isMobile) await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.waitForFunction(() => sessionStorage.getItem("nima-intro") === "1");
+  const seek = async (progress: number) => {
+    await page.evaluate(value => window.__journeyDebug?.setProgress(value), progress);
+    await expect.poll(() => page.evaluate(() => window.__journeyDebug?.getProgress()), { timeout: 5000 }).toBeCloseTo(progress, 2);
+    await page.waitForTimeout(950);
+  };
+  await seek(.24);
+  const suspended = await page.locator('[data-j="cargo"]').boundingBox();
+  await expect.poll(() => page.locator('[data-j="stackerGrip"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(.9);
+  await seek(.26);
+  const landed = await page.locator('[data-j="cargo"]').boundingBox();
+  const trailer = await page.locator('[data-j="truck"]').boundingBox();
+  expect(suspended && landed && trailer && landed.y > suspended.y && landed.x >= trailer.x && landed.x + landed.width <= trailer.x + trailer.width).toBeTruthy();
+  await seek(.28);
+  await expect.poll(() => page.locator('[data-j="stackerGrip"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeLessThan(.05);
+  await seek(.39);
+  const side = await page.locator('[data-j="truck"]').boundingBox();
+  const overhead = await page.locator('[data-j="roadTruck"]').boundingBox();
+  expect(side && overhead && Math.abs(side.x + side.width / 2 - overhead.x - overhead.width / 2) < page.viewportSize()!.width * .22).toBeTruthy();
+  await seek(.43);
+  await expect.poll(() => page.locator('[data-j="roadTruck"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(.9);
+  await seek(.24);
+  await expect.poll(() => page.locator('[data-j="stackerGrip"]').evaluate(element => Number(getComputedStyle(element).opacity))).toBeGreaterThan(.9);
+});
 test("visual checkpoints",async({page,isMobile})=>{
   mkdirSync("test-results/visual",{recursive:true});
   const size=isMobile?"mobile":"desktop";
