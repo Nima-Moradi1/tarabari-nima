@@ -4,8 +4,8 @@
 
 ## Current state
 - **Status:** PARTIAL — runnable Persian RTL marketing demo; exact reference parity and studio-grade freight art are not achieved.
-- **Active task:** None. The remaining quality gates below are open.
-- **Updated:** 2026-10-10 13:45 Asia/Tehran.
+- **Active task:** NR-023 — reference-observed freight choreography (PARTIAL; studio art and exact visual parity remain open).
+- **Updated:** 2026-10-11 Asia/Tehran.
 - **Repository:** Local Git repository on `main`; no remote or deployment exists.
 - **Stack:** Next.js 15 App Router, React 19, strict TypeScript, pnpm 11, GSAP ScrollTrigger, R3F/Three.js, Tailwind v4 and CSS Modules.
 - **Scope:** Marketing demo only. Inquiry data stays in memory in the browser; no network submission or storage.
@@ -18,6 +18,7 @@
 - Built service/industry/insight/career/community pages, six sample articles, interactive filters/gallery, and a local-only Iranian inquiry form with validation and modal.
 - Added a development-only `?motionDebug=1` HUD for scene/progress/FPS/trigger inspection and pause/resume.
 - Saved reviewed desktop 1440×900 and mobile 390×844 home, port and contact captures under `docs/screenshots/`.
+- Reworked the freight timeline: the marked box settles on the trailer before the loaded side-view truck departs across the warehouse/road blend; the overhead truck then follows the curve. At port, a separate animated crane trolley/cables/spreader picks up the same marked box, carries it over a visible water berth, and lands it on the ship deck. The deck marker is nested inside the vessel so it follows rotation, scale and departure. At the airport, a small top-view freight cart approaches the plane's fuselage on an apron; the plane takes off only after the cart has disappeared beneath it. The airfield then gives way to clouds. Mobile ship/plane positions and the sea caption use separate scroll-driven transforms.
 
 ## Decisions
 - All freight art is original procedural SVG; no United Carriers asset was copied. It is a working motion prototype, not final studio art.
@@ -52,6 +53,17 @@
 | NR-020 | UNVERIFIED | 6 captures reviewed and development HUD works; full checkpoint/route matrix and reference parity remain |
 | NR-021 | DONE | lint, TS, unit, build and 38 desktop/mobile E2E checks pass |
 | NR-022 | DONE | README, asset register, motion notes and this handoff are current |
+| NR-023 | PARTIAL | Live reference sampled, choreography revised and forward/reverse desktop/mobile browser checks pass. Exact pixel/source parity, independent stacker boom/wheel articulation, and production-grade ship/aircraft handoff art remain open. See subtask states below. |
+
+### NR-023 freight subtask states
+
+| Step | Status | Evidence / remaining work |
+| --- | --- | --- |
+| Live reference observation | DONE | Desktop Chromium scroll sampling at 1440×900: reach stacker lifts from the stack, carries a suspended box, lowers it to a waiting trailer; the loaded side-view truck departs before a later top-view road shot. The overhead ship is already container-loaded and sails/shrinks into clouds; a large plane subsequently crosses a separate section. The live homepage does **not** visibly depict a crane loading that ship or freight entering that plane, so those handoffs are our interpretation of the project motion contract, not copied reference frames. |
+| Trailer loading and departure | IMPLEMENTED | Cargo rests inside the trailer bounds at `.28`; the loaded truck moves on the original warehouse stage and remains visible during the road-background blend. The top-view loaded truck then takes the road bend. Reach-stacker boom and raster wheels are not independently articulated. |
+| Port pickup and ship loading | IMPLEMENTED | Spreader and cables lower to the box at `.56`, rise with it at `.60`, travel over the water berth and lower it to the deck by `.68`; the empty truck drives away. Deck cargo stays inside the ship group's bounds at `.73` and moves with the vessel. |
+| Vessel travel and airport loading | IMPLEMENTED | Ship rotates into an overhead travelling shot and recedes; the airport apron reveals a top-view freight cart moving to the fuselage hatch at `.83`. It is hidden by `.87` before takeoff; no freight remains on a wing. Terminal unpacking/cargo-door mechanics are simplified visual storytelling. |
+| Desktop/mobile review | DONE | Clean captures at `.26/.35/.66/.73/.83/.97` desktop and `.26/.66/.73/.83` mobile in `docs/screenshots/journey-*`; focused browser checks cover trailer containment, crane lift, deck containment, aircraft loading visibility and reverse scrub. Physical-device touch and source-exact parity remain unverified. |
 
 ## Verification
 - `pnpm install --offline` — PASS (pnpm still verified lockfile online); lockfile present.
@@ -60,18 +72,19 @@
 - `pnpm build` — PASS, 21 static routes/pages generated.
 - `pnpm test:e2e --reporter=line` — PASS, 38 checks across desktop Chromium and iPhone-sized mobile WebKit; includes routes, menu, form/no POST, reverse scene labels, axe, reduced motion, no-WebGL fallback and the development HUD.
 - Browser captures reviewed at 1440×900 desktop and 390×844 mobile: home, port `.52`, contact first view. See `docs/VISUAL_QA.md`.
+- For NR-023 on 2026-10-11: `pnpm lint`, `pnpm exec tsc --noEmit`, `git diff --check`, and `pnpm build` PASS; the focused forward/reverse and visual Playwright checks PASS 4/4 across desktop Chromium and mobile WebKit. The final clean checkpoint images are listed under NR-023 above. The complete older E2E suite was not rerun after this change.
 - Windows sandbox initially blocked Next/Vitest/Playwright worker spawn (`EPERM`); the same checks passed outside the sandbox.
 
 ## Blockers / limits
 - **B-001 open:** Studio-grade original/licensed truck, crane, ship and plane art has not been produced. Procedural SVG is functional but below the specified cinematic fidelity.
-- **B-002 open:** Precise original CSS/keyframes were not instrumented. Do not claim pixel or source parity.
+- **B-002 open:** Live reference frames and relative choreography were inspected, but the original animation source/keyframes and exact easing/positions were not recovered. Do not claim pixel or source parity. The reference does not visibly show the ship/aircraft loading actions requested here.
 - **B-003 open:** Real addresses, contacts, services and business claims were not supplied; demo labels must remain.
 - **B-004 open:** Physical-device touch, performance budgets and complete 12-checkpoint visual matrix are unverified. No-WebGL fallback passed in automated browsers.
 
 ## Next steps
-1. Run `pnpm dev` with `?motionDebug=1` and review `window.__journeyDebug.setProgress(p)` at `.02,.11,.19,.26,.35,.43,.52,.61,.69,.79,.89,.97` in both 1440×900 and 390×844; log mismatches in `docs/VISUAL_QA.md`.
-2. Replace procedural vehicle art with coherent original/licensed production layers while retaining the shared cargo timeline and provenance in `docs/ASSET_REGISTER.md`.
-3. Test globe scroll response, physical touch and measured performance.
+1. Finish the complete 12-checkpoint matrix and physical-device touch/performance review; compare pickup contact, the road perspective match and aircraft hold entry at intermediate scroll values in both directions.
+2. Replace or segment the raster reach stacker and truck so boom, forks and wheels can articulate independently, and develop original production-grade terminal, vessel and cargo-door art while retaining the attached-cargo timeline and asset provenance in `docs/ASSET_REGISTER.md`.
+3. Test globe scroll response and measured performance.
 4. Obtain verified company details before changing demo disclosures, search indexing or deployment.
 
 ## Important files

@@ -10,7 +10,12 @@ Reviewed browser captures are in [`screenshots/`](screenshots/): first views for
 | Globe city labels used fixed screen positions | Medium | Fixed; now projected from city coordinates and hidden on the far side in desktop/mobile captures |
 | Mobile truck cab is partially cropped during the port close-up | Medium | Open; framing choice needs art review |
 | Full 12-checkpoint visual matrix, modal view, all inner-page footers and exact reference parity | Medium | Not yet inspected |
+| Loaded truck disappeared during the warehouse-to-road background blend | High | Fixed; cargo remains on trailer as the side-view truck drives out, then the road-view truck enters |
+| Crane cargo missed the deck and ship/aircraft cargo sat outside their silhouettes | High | Fixed in the sampled desktop/mobile frames; deck marker is a child of the ship, and airport cart enters beneath the plane before takeoff |
+| Mobile ship cropped outside the frame | High | Fixed with independent mobile vessel scale, position and scroll-driven caption movement |
 
 The no-WebGL fallback and development motion HUD were also exercised in desktop Chromium and mobile WebKit. The HUD is available in development at `/?motionDebug=1`.
 
-The reference was not instrumented in a live browser during this implementation. The supplied specification describes its composition and choreography; exact visual parity is unverified.
+On 2026-10-11 the [United Carriers homepage](https://unitedcarriers.com/) was scrolled and captured in desktop Chromium. The visible order is reach-stacker pickup from a stack, suspended carry, placement on a waiting trailer, loaded side-view truck departure, a later overhead truck/road view, an already-loaded ship travelling and shrinking into clouds, and a large plane passing over another section. The live homepage does not visibly show a crane loading that ship or cargo entering the plane. Those two local handoffs implement the project's motion contract and remain interpretive. Exact source timing, easing and pixel parity are unverified.
+
+New clean local captures: `screenshots/journey-desktop-{26,35,66,73,83,97}.png` and `screenshots/journey-mobile-{26,66,73,83}.png`. These document the revised trailer, crane, vessel and airport positions without the debug overlay.
