@@ -7,6 +7,7 @@
 - **Active task:** NR-023 — reference-observed freight choreography (PARTIAL; studio art and exact visual parity remain open).
 - **Updated:** 2026-10-11 Asia/Tehran.
 - **Repository:** Local Git repository on `main`; `origin` points to `https://github.com/Nima-Moradi1/tarabari-nima.git`. No deployment is confirmed.
+- **Publication:** Categorized commits `21e1dbe`, `4d3f4a2`, `a466666`, and `a385fa7` were pushed to `origin/main`; the remote HEAD was verified at `a385fa7` on 2026-10-11.
 - **Stack:** Next.js 15 App Router, React 19, strict TypeScript, pnpm 11, GSAP ScrollTrigger, R3F/Three.js, Tailwind v4 and CSS Modules.
 - **Scope:** Marketing demo only. Inquiry data stays in memory in the browser; no network submission or storage.
 
