@@ -12,7 +12,7 @@ import styles from "./FreightJourney.module.css";
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, useGSAP);
 
-const journeyDuration = 156;
+const journeyDuration = 166;
 
 const beats = [
   { at: 0, label: "آماده‌سازی و بارگیری", detail: "کانتینر از محوطه بارگیری به کامیون تحویل داده می‌شود." },
@@ -20,7 +20,7 @@ const beats = [
   { at: 51 / journeyDuration, label: "بندر و انتقال بار", detail: "جرثقیل کانتینر را از تریلر بلند می‌کند و روی عرشه می‌نشاند." },
   { at: 71 / journeyDuration, label: "حمل دریایی", detail: "کانتینر روی عرشه همراه کشتی از بندر دور می‌شود." },
   { at: 105 / journeyDuration, label: "حمل هوایی", detail: "بار در پایانه به هواپیما تحویل می‌شود و پرواز آغاز می‌شود." },
-  { at: 150 / journeyDuration, label: "رسیدن به مقصد", detail: "از مبدأ تا مقصد، یک مسیر روشن و قابل پیگیری." },
+  { at: 162 / journeyDuration, label: "رسیدن به مقصد", detail: "از مبدأ تا مقصد، یک مسیر روشن و قابل پیگیری." },
 ] as const;
 
 declare global {
@@ -37,6 +37,8 @@ export function FreightJourney() {
   useGSAP(() => {
     const stage = root.current;
     if (!stage) return;
+    const progressBar = stage.querySelector<HTMLElement>('[data-j="progressBar"]');
+    if (!progressBar) return;
     const q = (name: string) => stage.querySelectorAll(`[data-j="${name}"]`);
     const mm = gsap.matchMedia();
 
@@ -57,20 +59,25 @@ export function FreightJourney() {
       const glints = stage.querySelector<SVGGElement>('[data-j="waterGlintMotion"]');
       let seaFrame = 0;
       let seaStart = 0;
+      let lastSeaPaint = 0;
       let seaActive = false;
       const animateSea = (now: number) => {
         if (!seaActive) return;
+        seaFrame = requestAnimationFrame(animateSea);
+        if (mobile && now - lastSeaPaint < 33) return;
+        lastSeaPaint = now;
         const seconds = (now - seaStart) / 1000;
         const wave = (period: number, phase = 0) => Math.sin(seconds * Math.PI * 2 / period + phase);
         swell?.setAttribute("transform", `translate(${2 + 13 * wave(16, -Math.PI / 2)} ${-1 + 9 * wave(13, Math.PI / 2)})`);
-        shimmer?.setAttribute("transform", `translate(${26 * wave(13, Math.PI / 2)} ${15 * wave(10, -Math.PI / 2)})`);
-        shimmer?.setAttribute("opacity", String(.77 + .2 * wave(9)));
+        if (!mobile) {
+          shimmer?.setAttribute("transform", `translate(${26 * wave(13, Math.PI / 2)} ${15 * wave(10, -Math.PI / 2)})`);
+          shimmer?.setAttribute("opacity", String(.77 + .2 * wave(9)));
+        }
         glints?.setAttribute("transform", `translate(${22 * wave(10)} ${7 * wave(12, Math.PI / 2)})`);
         glints?.setAttribute("opacity", String(.39 + .16 * wave(7)));
-        seaFrame = requestAnimationFrame(animateSea);
       };
 
-      ["road", "port", "ocean", "air", "truck", "roadTruck", "ship", "shipWake", "deckCargo", "craneRig", "airCargo", "airPayload", "hatch", "planeShadow", "cloudBack", "cloudFront", "flightPath"].forEach(name => set(name, { autoAlpha: 0 }));
+      ["road", "port", "ocean", "air", "truck", "roadTruck", "ship", "shipWake", "deckCargo", "craneRig", "airCargo", "airPayload", "hatch", "planeShadow", "planeDeparture", "cloudBack", "cloudFront", "flightPath"].forEach(name => set(name, { autoAlpha: 0 }));
       set("warehouse", { autoAlpha: 1 });
       set("forklift", { x: mobile ? 1020 : 930, y: 500, scale: mobile ? .65 : 1 });
       set("boom", { attr: { transform: "rotate(-10 100 -50)" } });
@@ -81,11 +88,13 @@ export function FreightJourney() {
       set("gantry", { x: mobile ? 130 : 0 });
       set("ship", { x: mobile ? 765 : 1020, y: 450, scale: .7 });
       set("shipBody", { attr: { transform: "rotate(0 0 0)" } });
+      if (mobile) set("waterShimmer", { autoAlpha: 0 });
       set("deckCargo", { scale: 1 });
       set("craneRig", { x: mobile ? 635 : 245 });
       set("spreader", { y: 300 });
       set("craneCable", { attr: { y2: 300 } });
       set("plane", { x: mobile ? 310 : -180, y: mobile ? 270 : 100, scale: mobile ? .19 : .28, rotation: -7, autoAlpha: 0, transformOrigin: "50% 50%" });
+      set("planeDeparture", { x: mobile ? 540 : 580, y: mobile ? 517 : 497, scale: mobile ? .32 : .62, scaleX: mobile ? .08 : .15, rotation: 0, autoAlpha: 0, transformOrigin: "50% 50%" });
       set("airCargo", { x: mobile ? 1050 : 1200, y: mobile ? 535 : 465, scale: .84 });
       set("airPayload", { x: mobile ? 890 : 1020, y: mobile ? 530 : 460, scale: .65 });
       set("hatchDoor", { x: 0 });
@@ -159,7 +168,7 @@ export function FreightJourney() {
       to("ship", { x: mobile ? 980 : 950, y: mobile ? 335 : 320, scale: mobile ? .52 : .62, duration: 12, ease: "power1.inOut" }, 76);
       to("ship", { x: mobile ? 990 : 980, y: 210, scale: mobile ? .46 : .48, duration: 14, ease: "power1.in" }, 88);
       to("waterSurface", { x: -75, y: 35, duration: 37, ease: "none" }, 67);
-      to("waterRipples", { x: 115, y: -42, duration: 37, ease: "none" }, 67);
+      if (!mobile) to("waterRipples", { x: 115, y: -42, duration: 37, ease: "none" }, 67);
       to("waterGlint", { x: 105, y: -28, duration: 37, ease: "none" }, 67);
       to("shipWake", { autoAlpha: .9, duration: 5 }, 76);
 
@@ -190,24 +199,26 @@ export function FreightJourney() {
       to("airCargo", { x: mobile ? 1050 : 1200, duration: 5, ease: "power1.in" }, 131);
       to("airCargo", { autoAlpha: 0, duration: 2 }, 134);
 
-      // The aircraft accelerates along the same runway before lifting away.
-      to("plane", { x: mobile ? 820 : 800, y: mobile ? 470 : 450, scale: mobile ? .37 : .74, rotation: -3, duration: 6, ease: "power2.in" }, 136);
-      to("planeShadow", { x: mobile ? 790 : 780, y: 580, autoAlpha: 0, scale: .65, duration: 8 }, 136);
-      to("cloudBack", { autoAlpha: .45, duration: 4 }, 137);
-      to("cloudFront", { autoAlpha: .7, duration: 5 }, 140);
-      to("cloudBack", { x: mobile ? -80 : -135, duration: 15 }, 140);
-      to("cloudFront", { x: mobile ? -140 : -260, duration: 15 }, 140);
-      to("plane", { x: mobile ? 1030 : 1050, y: 225, scale: mobile ? .12 : .42, rotation: -8, duration: 9, ease: "power1.in" }, 142);
-      to("plane", { x: mobile ? 1290 : 1300, y: -220, scale: .17, duration: 5, ease: "power1.in" }, 151);
+      // Yaw on the ground first, then roll toward the runway's vanishing point.
+      // The shadow stays on the asphalt until the wheels leave it.
+      to("plane", { scaleX: mobile ? .08 : .15, duration: 4, ease: "power1.inOut" }, 136);
+      to("plane", { autoAlpha: 0, duration: .2 }, 139.9);
+      to("planeDeparture", { autoAlpha: 1, duration: .2 }, 140);
+      to("planeDeparture", { x: mobile ? 550 : 600, scaleX: mobile ? .32 : .62, duration: 3, ease: "power1.inOut" }, 140);
+      to("planeDeparture", { x: mobile ? 650 : 840, y: mobile ? 490 : 460, scale: mobile ? .24 : .43, rotation: -3, duration: 9, ease: "power2.in" }, 143);
+      to("planeShadow", { x: mobile ? 630 : 820, y: mobile ? 530 : 510, scale: mobile ? .3 : .62, duration: 9, ease: "power2.in" }, 143);
+      to("planeDeparture", { x: mobile ? 710 : 990, y: mobile ? 220 : 180, scale: mobile ? .16 : .28, rotation: -9, duration: 7, ease: "power2.in" }, 152);
+      to("planeShadow", { x: mobile ? 690 : 950, y: 490, autoAlpha: 0, scale: .2, duration: 7 }, 152);
+      to("planeDeparture", { x: mobile ? 780 : 1250, y: -180, scale: .1, duration: 5, ease: "power1.in" }, 159);
       tl.to({}, { duration: 1 }, journeyDuration - 1);
 
       const trigger = ScrollTrigger.create({
         id: "freight-journey",
         trigger: stage,
         start: "top top",
-        end: () => `+=${window.innerHeight * (mobile ? 8.1 : 11.2)}`,
+        end: () => `+=${stage.clientHeight * (mobile ? 8.6 : 11.9)}`,
         pin: true,
-        scrub: mobile ? .3 : .8,
+        scrub: mobile ? .18 : .8,
         animation: tl,
         invalidateOnRefresh: true,
         onUpdate: self => {
@@ -218,16 +229,21 @@ export function FreightJourney() {
             seaActive = showSea;
             if (showSea) {
               seaStart = performance.now();
+              lastSeaPaint = 0;
               seaFrame = requestAnimationFrame(animateSea);
             } else {
               cancelAnimationFrame(seaFrame);
             }
           }
-          stage.dataset.scene = time < 37 ? "warehouse" : time < 51 ? "road" : time < 71 ? "port" : time < 105 ? "ocean" : time < 150 ? "air" : "arrival";
-          stage.dataset.phase = time < 76 ? "port-to-sea" : time < 101 ? "sailing" : time < 117 ? "landing" : time < 136 ? "air-loading" : "takeoff";
+          const scene = time < 37 ? "warehouse" : time < 51 ? "road" : time < 71 ? "port" : time < 105 ? "ocean" : time < 162 ? "air" : "arrival";
+          const phase = time < 76 ? "port-to-sea" : time < 101 ? "sailing" : time < 117 ? "landing" : time < 136 ? "air-loading" : "takeoff";
+          const flightStep = time < 136 ? "approach" : time < 143 ? "turn" : time < 152 ? "roll" : time < 157 ? "lift" : "climb";
+          if (stage.dataset.scene !== scene) stage.dataset.scene = scene;
+          if (stage.dataset.phase !== phase) stage.dataset.phase = phase;
+          if (stage.dataset.flightStep !== flightStep) stage.dataset.flightStep = flightStep;
           const index = beats.reduce((found, item, current) => progress >= item.at ? current : found, 0);
           if (index !== beatIndex.current) { beatIndex.current = index; setBeat(index); }
-          stage.style.setProperty("--progress", String(progress));
+          progressBar.style.transform = `scaleX(${progress})`;
         },
       });
 
@@ -247,7 +263,7 @@ export function FreightJourney() {
       <FreightArt />
       <div className={styles.top}><span>سفر یک محموله</span><span dir="ltr">NIMA / FREIGHT JOURNEY</span></div>
       <div data-j="caption" className={styles.caption} aria-live="polite"><span>۰{Math.min(beat + 1, 6)} / ۰۶</span><h2 key={beat}>{beats[beat].label}</h2><p>{beats[beat].detail}</p></div>
-      <div className={styles.progress}><span /></div>
+      <div className={styles.progress}><span data-j="progressBar" /></div>
       <div className={styles.scrollHint}>برای ادامه اسکرول کنید ↓</div>
       {beat === 5 && <Link className={`btn btn-primary ${styles.endCta}`} href="/contact">درخواست مشاوره ↗</Link>}
     </section>

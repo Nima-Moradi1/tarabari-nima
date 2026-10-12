@@ -160,6 +160,9 @@ export function FreightArt() {
             <path data-j="hatchDoor" d="M280 -38h20v26h-20Z" fill="#e3e9e9" stroke="#748b98" strokeWidth="2" />
           </g>
         </g>
+        <g data-j="planeDeparture" className={styles.vehicle}>
+          <image href={asset("plane-takeoff-turn-v1")} x="-430" y="-260" width="860" height="516" />
+        </g>
         <g data-j="airPayload" className={styles.cargo}>
           <rect x="-26" y="-20" width="52" height="40" rx="2" fill="#e6e8e5" stroke="#7c919b" strokeWidth="3" />
           <path d="M-18 -17v34m12-34v34m12-34v34m12-34v34" stroke="#afbdc4" strokeWidth="2" />

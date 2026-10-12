@@ -79,12 +79,21 @@ function GlobeObject({labelRefs}:{labelRefs:RefObject<(HTMLSpanElement|null)[]>}
   </group>;
 }
 export function GlobeScene(){
-  const [supported,setSupported]=useState(false),labelRefs=useRef<(HTMLSpanElement|null)[]>([]);
+  const [supported,setSupported]=useState(false),[inView,setInView]=useState(true),labelRefs=useRef<(HTMLSpanElement|null)[]>([]),wrapRef=useRef<HTMLDivElement>(null);
   const mobile=typeof window!=="undefined"&&window.innerWidth<768;
   useEffect(()=>{try{const canvas=document.createElement("canvas");setSupported(Boolean(canvas.getContext("webgl2")||canvas.getContext("webgl")))}catch{setSupported(false)}},[]);
+  useEffect(()=>{
+    const wrap=wrapRef.current;
+    if(!wrap||typeof IntersectionObserver==="undefined")return;
+    const observer=new IntersectionObserver(([entry])=>setInView(entry.isIntersecting&&!document.hidden));
+    const visibility=()=>{const bounds=wrap.getBoundingClientRect();setInView(!document.hidden&&bounds.bottom>0&&bounds.top<window.innerHeight)};
+    observer.observe(wrap);
+    document.addEventListener("visibilitychange",visibility);
+    return()=>{observer.disconnect();document.removeEventListener("visibilitychange",visibility)};
+  },[supported]);
   if(!supported)return <GlobeFallback/>;
-  return <div className={styles.wrap} aria-label="کره سه‌بعدی نمایشی با مسیرهای نارنجی متحرک از تهران به بندرعباس، استانبول، بمبئی و شانگهای" role="img">
-    <Canvas camera={{position:[0,0,5.9],fov:50}} dpr={[1,1.75]} gl={{alpha:true,antialias:false,powerPreference:"low-power"}} onCreated={({gl})=>{gl.domElement.addEventListener("webglcontextlost",()=>setSupported(false),{once:true})}}><ambientLight intensity={.7}/><GlobeObject labelRefs={labelRefs}/></Canvas>
+  return <div ref={wrapRef} className={styles.wrap} aria-label="کره سه‌بعدی نمایشی با مسیرهای نارنجی متحرک از تهران به بندرعباس، استانبول، بمبئی و شانگهای" role="img">
+    <Canvas camera={{position:[0,0,5.9],fov:50}} dpr={mobile?1:[1,1.75]} frameloop={inView?"always":"never"} gl={{alpha:true,antialias:false,powerPreference:"low-power"}} onCreated={({gl})=>{gl.domElement.addEventListener("webglcontextlost",()=>setSupported(false),{once:true})}}><ambientLight intensity={.7}/><GlobeObject labelRefs={labelRefs}/></Canvas>
     <div className={`${styles.labels} ${styles.projected}`}>{labels.slice(0,mobile?2:4).map((city,index)=><span key={city.name} ref={element=>{labelRefs.current[index]=element}}><i/>{city.name}{index>0&&<small>{distanceKm(globeCities[0],city).toLocaleString("fa-IR")} km</small>}</span>)}</div>
   </div>;
 }
