@@ -110,9 +110,13 @@ test("ship passage, aircraft landing, hold loading and cloud departure have dist
   const viewportWidth=page.viewportSize()!.width;
   expect(firstShip&&laterShip&&laterShip.width<firstShip.width&&laterShip.y<firstShip.y&&firstShip.x+firstShip.width/2>viewportWidth*.2&&firstShip.x+firstShip.width/2<viewportWidth*.8&&laterShip.x+laterShip.width/2>viewportWidth*.2&&laterShip.x+laterShip.width/2<viewportWidth*.8).toBeTruthy();
   await seek(.70,"landing","air-approach");
+  const approachingPlane=await page.locator('[data-j="plane"] > image').boundingBox();
   await seek(.745,"landing","air-touchdown");
   const landedPlane=await page.locator('[data-j="plane"] > image').boundingBox();
+  expect(approachingPlane&&landedPlane&&landedPlane.x+landedPlane.width/2>approachingPlane.x+approachingPlane.width/2&&landedPlane.y+landedPlane.height/2>approachingPlane.y+approachingPlane.height/2).toBeTruthy();
+  await expect.poll(()=>page.locator('[data-j="approachField"]').evaluate(element=>Number(getComputedStyle(element).opacity))).toBeGreaterThan(.99);
   await seek(.79,"air-loading","air-load-start");
+  await expect.poll(()=>page.locator('[data-j="approachField"]').evaluate(element=>Number(getComputedStyle(element).opacity))).toBeGreaterThan(.99);
   await expect.poll(()=>page.locator('[data-j="airPayload"]').evaluate(element=>Number(getComputedStyle(element).opacity))).toBeGreaterThan(.9);
   const payload=await page.locator('[data-j="airPayload"]').boundingBox();
   const hatch=await page.locator('[data-j="hatch"]').boundingBox();

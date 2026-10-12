@@ -70,7 +70,7 @@ export function FreightJourney() {
         seaFrame = requestAnimationFrame(animateSea);
       };
 
-      ["road", "port", "ocean", "air", "approachField", "transfer", "truck", "roadTruck", "ship", "shipWake", "deckCargo", "craneRig", "airCargo", "airPayload", "hatch", "planeShadow", "cloudBack", "cloudFront", "flightPath"].forEach(name => set(name, { autoAlpha: 0 }));
+      ["road", "port", "ocean", "air", "truck", "roadTruck", "ship", "shipWake", "deckCargo", "craneRig", "airCargo", "airPayload", "hatch", "planeShadow", "cloudBack", "cloudFront", "flightPath"].forEach(name => set(name, { autoAlpha: 0 }));
       set("warehouse", { autoAlpha: 1 });
       set("forklift", { x: mobile ? 1020 : 930, y: 500, scale: mobile ? .65 : 1 });
       set("boom", { attr: { transform: "rotate(-10 100 -50)" } });
@@ -85,11 +85,11 @@ export function FreightJourney() {
       set("craneRig", { x: mobile ? 635 : 245 });
       set("spreader", { y: 300 });
       set("craneCable", { attr: { y2: 300 } });
-      set("plane", { x: mobile ? 310 : -230, y: mobile ? -260 : -180, scale: .16, rotation: 25, rotationX: 58, autoAlpha: 0, transformOrigin: "50% 50%", transformPerspective: 900 });
-      set("airCargo", { x: mobile ? 990 : 1100, y: mobile ? 305 : 295, scale: .8 });
-      set("airPayload", { x: 235, y: -190 });
-      set("hatchDoor", { y: 0 });
-      set("planeShadow", { scale: 1.35, transformOrigin: "50% 50%" });
+      set("plane", { x: mobile ? 310 : -180, y: mobile ? 270 : 100, scale: mobile ? .19 : .28, rotation: -7, autoAlpha: 0, transformOrigin: "50% 50%" });
+      set("airCargo", { x: mobile ? 1050 : 1200, y: mobile ? 535 : 465, scale: .84 });
+      set("airPayload", { x: mobile ? 890 : 1020, y: mobile ? 530 : 460, scale: .65 });
+      set("hatchDoor", { x: 0 });
+      set("planeShadow", { x: mobile ? 390 : 150, y: 490, scale: .45, transformOrigin: "50% 50%" });
       set("caption", { y: 0 });
 
       // Grip the top corner castings before lifting. Keep the gripper attached
@@ -163,45 +163,42 @@ export function FreightJourney() {
       to("waterGlint", { x: 105, y: -28, duration: 37, ease: "none" }, 67);
       to("shipWake", { autoAlpha: .9, duration: 5 }, 76);
 
-      // The aircraft enters from outside the shot, descends over a perspective
-      // runway and settles while the camera pulls back to the overhead apron.
+      // Keep one runway and horizon throughout. The same side-view aircraft
+      // travels forward on a shallow glide slope until its wheels meet it.
       to("air", { autoAlpha: 1, duration: 5 }, 101);
-      to("approachField", { autoAlpha: 1, duration: 2 }, 101);
       to("ship", { autoAlpha: 0, duration: 5 }, 101);
       to("shipWake", { autoAlpha: 0, duration: 5 }, 101);
       to("ocean", { autoAlpha: 0, duration: 5 }, 101);
-      to("plane", { autoAlpha: 1, duration: 1 }, 104);
-      to("plane", { x: mobile ? 650 : 540, y: 215, scale: mobile ? .65 : 1.08, rotation: 6, rotationX: 24, duration: 8, ease: "power2.out" }, 104);
-      to("plane", { x: mobile ? 625 : 650, y: 430, scale: mobile ? .65 : .72, rotation: 0, rotationX: 0, duration: 7, ease: "power2.inOut" }, 112);
-      to("planeShadow", { autoAlpha: .34, scale: 1, duration: 7, ease: "power1.in" }, 110);
-      to("transfer", { autoAlpha: 1, duration: 6 }, 111);
-      to("approachField", { autoAlpha: 0, duration: 6 }, 111);
+      to("plane", { autoAlpha: 1, duration: 1 }, 103);
+      to("plane", { x: mobile ? 450 : 320, y: mobile ? 400 : 315, scale: mobile ? .3 : .6, rotation: -4, duration: 8, ease: "power1.inOut" }, 104);
+      to("plane", { x: mobile ? 530 : 560, y: mobile ? 515 : 495, scale: mobile ? .37 : .78, rotation: -2, duration: 4, ease: "power1.out" }, 112);
+      to("planeShadow", { x: mobile ? 520 : 540, y: 540, autoAlpha: .48, scale: mobile ? .45 : 1, duration: 6, ease: "power1.in" }, 110);
+      to("plane", { x: mobile ? 540 : 580, y: mobile ? 517 : 497, rotation: 0, duration: 2, ease: "power2.out" }, 116);
+      to("planeShadow", { x: mobile ? 530 : 560, y: 545, duration: 2 }, 116);
 
       // A raised roller loader meets the forward fuselage hatch. The freight
       // moves along the loader and is occluded by the aircraft at the door.
       to("airCargo", { autoAlpha: 1, duration: 2 }, 117);
       to("hatch", { autoAlpha: 1, duration: 1 }, 117);
-      to("airCargo", { x: mobile ? 790 : 790, duration: 5, ease: "power1.out" }, 118);
-      to("hatchDoor", { y: -65, duration: 2, ease: "power1.inOut" }, 120);
+      to("airCargo", { x: mobile ? 800 : 940, duration: 5, ease: "power1.out" }, 118);
+      to("hatchDoor", { x: -23, duration: 2, ease: "power1.inOut" }, 120);
       to("airPayload", { autoAlpha: 1, duration: 1 }, 121);
-      to("airPayload", { x: 17, duration: 7, ease: "power1.inOut" }, 122);
+      to("airPayload", { x: mobile ? 660 : 825, y: mobile ? 500 : 470, duration: 7, ease: "power1.inOut" }, 122);
       to("airPayload", { autoAlpha: 0, duration: 1 }, 128);
-      to("hatchDoor", { y: 0, duration: 2 }, 130);
+      to("hatchDoor", { x: 0, duration: 2 }, 130);
       to("hatch", { autoAlpha: 0, duration: 1 }, 132);
-      to("airCargo", { x: mobile ? 1100 : 1180, duration: 5, ease: "power1.in" }, 131);
+      to("airCargo", { x: mobile ? 1050 : 1200, duration: 5, ease: "power1.in" }, 131);
       to("airCargo", { autoAlpha: 0, duration: 2 }, 134);
 
-      // Runway acceleration, rotation and a longer climb into cloud layers.
-      to("plane", { x: mobile ? 635 : 670, y: 255, scale: mobile ? .68 : .7, rotationX: 25, duration: 6, ease: "power2.in" }, 136);
-      to("planeShadow", { autoAlpha: 0, scale: .5, duration: 6 }, 136);
-      to("transfer", { autoAlpha: 0, duration: 8 }, 136);
+      // The aircraft accelerates along the same runway before lifting away.
+      to("plane", { x: mobile ? 820 : 800, y: mobile ? 470 : 450, scale: mobile ? .37 : .74, rotation: -3, duration: 6, ease: "power2.in" }, 136);
+      to("planeShadow", { x: mobile ? 790 : 780, y: 580, autoAlpha: 0, scale: .65, duration: 8 }, 136);
       to("cloudBack", { autoAlpha: .45, duration: 4 }, 137);
       to("cloudFront", { autoAlpha: .7, duration: 5 }, 140);
       to("cloudBack", { x: mobile ? -80 : -135, duration: 15 }, 140);
       to("cloudFront", { x: mobile ? -140 : -260, duration: 15 }, 140);
-      to("skyPhoto", { scale: 1.08, x: -28, y: 20, duration: 19 }, 136);
-      to("plane", { x: mobile ? 650 : 760, y: mobile ? 315 : 210, scale: mobile ? .07 : .37, rotation: 8, rotationX: 42, duration: 9, ease: "power1.in" }, 142);
-      to("plane", { x: mobile ? 770 : 870, y: -330, scale: mobile ? .05 : .16, duration: 5, ease: "power1.in" }, 151);
+      to("plane", { x: mobile ? 1030 : 1050, y: 225, scale: mobile ? .12 : .42, rotation: -8, duration: 9, ease: "power1.in" }, 142);
+      to("plane", { x: mobile ? 1290 : 1300, y: -220, scale: .17, duration: 5, ease: "power1.in" }, 151);
       tl.to({}, { duration: 1 }, journeyDuration - 1);
 
       const trigger = ScrollTrigger.create({
